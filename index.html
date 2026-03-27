@@ -181,9 +181,9 @@
             <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
                 <div class="p-1.5 bg-gray-800 border-b border-gray-700 flex justify-center">
                     <select id="selSceneLeft" class="bg-gray-700 text-white text-[10px] md:text-xs font-bold p-1.5 rounded border border-gray-600 outline-none w-full max-w-sm cursor-pointer">
-                        <option value="1">1. 무중력 우주 & 등속 운동 (내부 시점)</option>
+                        <option value="1" selected>1. 무중력 우주 & 등속 운동 (내부 시점)</option>
                         <option value="2">2. 무중력 우주 & 등속 운동 (외부 시점)</option>
-                        <option value="3" selected>3. 무중력 우주 & 가속 운동 (내부 시점)</option>
+                        <option value="3">3. 무중력 우주 & 가속 운동 (내부 시점)</option>
                         <option value="4">4. 무중력 우주 & 가속 운동 (외부 시점)</option>
                         <option value="5">5. 행성 표면 (중력 상태)</option>
                     </select>
@@ -195,10 +195,10 @@
                 <div class="p-1.5 bg-gray-800 border-b border-gray-700 flex justify-center">
                     <select id="selSceneRight" class="bg-gray-700 text-white text-[10px] md:text-xs font-bold p-1.5 rounded border border-gray-600 outline-none w-full max-w-sm cursor-pointer">
                         <option value="1">1. 무중력 우주 & 등속 운동 (내부 시점)</option>
-                        <option value="2">2. 무중력 우주 & 등속 운동 (외부 시점)</option>
+                        <option value="2" selected>2. 무중력 우주 & 등속 운동 (외부 시점)</option>
                         <option value="3">3. 무중력 우주 & 가속 운동 (내부 시점)</option>
                         <option value="4">4. 무중력 우주 & 가속 운동 (외부 시점)</option>
-                        <option value="5" selected>5. 행성 표면 (중력 상태)</option>
+                        <option value="5">5. 행성 표면 (중력 상태)</option>
                     </select>
                 </div>
                 <div class="flex-1 relative p-1"><canvas id="cvsPlanet3" class="w-full h-full"></canvas></div>
@@ -564,9 +564,14 @@
             
             if (isSpace) {
                 ctx.fillStyle = '#fff';
-                for(let i=0; i<30; i++) {
-                    let sx = (i * 83) % w;
-                    let sy = (i * 101) % h;
+                for(let i=1; i<=40; i++) {
+                    // Math.sin을 활용한 고정 난수(Pseudo-random) 생성으로 불규칙하고 자연스러운 별 배치
+                    let randX = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
+                    let randY = Math.abs(Math.sin(i * 78.2330) * 43758.5453) % 1;
+                    
+                    let sx = randX * w;
+                    let sy = randY * h;
+                    
                     if (starsMoving) sy = (sy + starsOffset) % h;
                     ctx.fillRect(sx, sy, 1.5, 1.5);
                 }

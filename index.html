@@ -27,8 +27,27 @@
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #00f3ff; cursor: pointer; margin-top: -7px; box-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
         input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: #1e293b; border-radius: 2px; }
         
-        .tab-btn { transition: all 0.3s ease; border-bottom: 2px solid transparent; }
-        .tab-btn.active { border-bottom: 2px solid #00f3ff; color: #00f3ff; background: rgba(0, 243, 255, 0.1); }
+        .tab-btn { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            margin: 0 2px;
+            background: rgba(30, 41, 59, 0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+        }
+        .tab-btn.active { 
+            border-color: #00f3ff; 
+            color: #00f3ff; 
+            background: rgba(0, 243, 255, 0.15); 
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.3), inset 0 0 5px rgba(0, 243, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        .tab-btn:hover:not(.active) {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: #334155;
+        }
+
         .pedal-btn:active { transform: scale(0.95); background-color: #ef4444 !important; }
         .preset-btn { transition: all 0.2s; }
         .preset-btn.active { background-color: #0891b2; ring: 2px solid #22d3ee; }
@@ -37,35 +56,69 @@
 <body class="flex flex-col min-h-screen p-2 md:p-4">
 
     <header class="mb-4 bg-gray-900 rounded-xl border border-gray-800 shadow-lg overflow-hidden">
-        <div class="p-4 flex flex-col md:flex-row justify-between items-center border-b border-gray-800">
-            <div class="text-center md:text-left">
+        <div class="p-4 flex flex-col lg:flex-row justify-between items-center border-b border-gray-800">
+            <div class="text-center lg:text-left mb-4 lg:mb-0">
                 <h1 class="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400">
                     RELATIVITY UNIVERSE
                 </h1>
-                <p class="text-xs text-gray-400 mt-1">특수 및 일반 상대성 이론 통합 시뮬레이터</p>
+                <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest">Integrated Relativity Simulator</p>
             </div>
+            <nav class="flex w-full lg:w-auto overflow-x-auto no-scrollbar p-1">
+                <button class="tab-btn active flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="1">1. 광속 불변</button>
+                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="2">2. 특수 상대성</button>
+                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="3">3. 쌍둥이 역설</button>
+                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="4">4. 등가 원리</button>
+            </nav>
         </div>
-        <nav class="flex text-sm font-bold">
-            <button class="tab-btn active flex-1 py-3 text-gray-400" data-tab="1">1. 특수 상대성 (등속)</button>
-            <button class="tab-btn flex-1 py-3 text-gray-400" data-tab="2">2. 쌍둥이 역설 (가속)</button>
-            <button class="tab-btn flex-1 py-3 text-gray-400" data-tab="3">3. 등가 원리 (중력)</button>
-        </nav>
     </header>
 
-    <!-- Tab 1: Special Relativity -->
-    <section id="tab1" class="flex-1 flex flex-col min-h-0">
+    <!-- Tab 1: Constancy of Light Speed -->
+    <section id="tab0" class="flex-1 flex flex-col min-h-0">
         <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800 gap-4">
             <div class="flex-1 w-full max-w-xl mx-2 md:mx-4">
                 <div class="flex justify-between text-[10px] md:text-sm mb-1 text-cyan-300">
-                    <span>0c (정지)</span><span>우주선 속도 (v)</span><span>0.99c</span>
+                    <span>0c (정지)</span><span>우주선 속도 (v)</span><span>0.90c</span>
+                </div>
+                <input type="range" id="velSlider0" min="0" max="0.9" step="0.01" value="0.5">
+            </div>
+            
+            <div class="flex flex-wrap justify-center items-center gap-2 md:gap-4">
+                <div class="flex items-center space-x-2 bg-gray-800 p-2 rounded-lg border border-gray-700">
+                    <div class="text-center px-2"><div class="text-[10px] text-gray-400">우주선 속도</div><div class="text-sm font-bold text-cyan-400" id="valV0">0.50c</div></div>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button id="btnThrowBall0" class="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white rounded font-bold text-xs md:text-sm transition-colors">야구공 던지기</button>
+                    <button id="btnShootLight0" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold text-xs md:text-sm transition-colors">빛 쏘기</button>
+                    <button id="btnReset0" class="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white rounded font-bold text-xs md:text-sm transition-colors">초기화</button>
+                </div>
+            </div>
+        </div>
+        <main class="flex-1 grid grid-cols-2 gap-2 md:gap-4 min-h-0">
+            <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-fuchsia-400">관찰자: 우주선 (내부 관찰자)</h2></div>
+                <div class="flex-1 relative p-1"><canvas id="cvsInside0" class="w-full h-full"></canvas></div>
+            </div>
+            <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-cyan-400">관찰자: 지구 (외부 관찰자)</h2></div>
+                <div class="flex-1 relative p-1"><canvas id="cvsOutside0" class="w-full h-full"></canvas></div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Tab 2: Special Relativity (Hidden by default) -->
+    <section id="tab1" class="flex-1 flex flex-col min-h-0 hidden">
+        <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800 gap-4">
+            <div class="flex-1 w-full max-w-xl mx-2 md:mx-4">
+                <div class="flex justify-between text-[10px] md:text-sm mb-1 text-cyan-300">
+                    <span>0c</span><span>우주선 속도</span><span>0.99c</span>
                 </div>
                 <input type="range" id="velSlider1" min="0" max="0.99" step="0.01" value="0">
             </div>
             
             <div class="flex flex-wrap justify-center items-center gap-2 md:gap-4">
-                <!-- 목표 왕복 횟수 프리셋 -->
                 <div class="flex items-center space-x-1 bg-gray-800 p-1 rounded-lg border border-gray-700">
-                    <span class="text-[10px] text-gray-400 px-1">목표(왕복):</span>
+                    <span class="text-[10px] text-gray-400 px-1">목표:</span>
                     <button class="preset-btn-1 px-2 py-1 bg-cyan-600 hover:bg-gray-600 text-white rounded text-xs active" data-val="1">1</button>
                     <button class="preset-btn-1 px-2 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded text-xs" data-val="2">2</button>
                     <button class="preset-btn-1 px-2 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded text-xs" data-val="3">3</button>
@@ -76,7 +129,7 @@
                 <div class="flex items-center space-x-2 bg-gray-800 p-2 rounded-lg border border-gray-700">
                     <div class="text-center px-1"><div class="text-[10px] text-gray-400">속도</div><div class="text-sm font-bold text-cyan-400" id="valV1">0.00c</div></div>
                     <div class="w-px h-6 bg-gray-600"></div>
-                    <div class="text-center px-1"><div class="text-[10px] text-gray-400">로렌츠 인자(γ)</div><div class="text-sm font-bold text-fuchsia-400" id="valGamma1">1.00</div></div>
+                    <div class="text-center px-1"><div class="text-[10px] text-gray-400">로렌츠 인자</div><div class="text-sm font-bold text-fuchsia-400" id="valGamma1">1.00</div></div>
                 </div>
                 
                 <div class="flex space-x-2">
@@ -87,7 +140,7 @@
         </div>
         <main class="flex-1 grid grid-cols-2 gap-2 md:gap-4 min-h-0">
             <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-cyan-400">관찰자: 지구 (정지계)</h2></div>
+                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-cyan-400">관찰자: 지구</h2></div>
                 <div class="flex-1 relative p-1"><canvas id="cvsEarth1" class="w-full h-full"></canvas></div>
                 <div class="grid grid-cols-2 gap-px bg-gray-700">
                     <div class="bg-gray-900 py-2 text-center">
@@ -96,18 +149,18 @@
                         <div class="text-[10px] text-gray-500">빛 이동: <span id="distE1_E">0.00</span>m</div>
                     </div>
                     <div class="bg-gray-900 py-2 text-center">
-                        <span class="text-[9px] text-fuchsia-400 block mb-1">우주선 시간 (지연)</span>
+                        <span class="text-[9px] text-fuchsia-400 block mb-1">우주선 시간</span>
                         <div class="text-lg font-bold text-fuchsia-400" id="timeS1_E">0.00s</div>
                         <div class="text-[10px] text-gray-500">빛 이동: <span id="distS1_E">0.00</span>m</div>
                     </div>
                 </div>
             </div>
             <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-fuchsia-400">관찰자: 우주선 (이동계)</h2></div>
+                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-fuchsia-400">관찰자: 우주선</h2></div>
                 <div class="flex-1 relative p-1"><canvas id="cvsShip1" class="w-full h-full"></canvas></div>
                 <div class="grid grid-cols-2 gap-px bg-gray-700">
                     <div class="bg-gray-900 py-2 text-center">
-                        <span class="text-[9px] text-cyan-400 block mb-1">지구 시간 (지연)</span>
+                        <span class="text-[9px] text-cyan-400 block mb-1">지구 시간</span>
                         <div class="text-lg font-bold text-cyan-400" id="timeE1_S">0.00s</div>
                         <div class="text-[10px] text-gray-500">빛 이동: <span id="distE1_S">0.00</span>m</div>
                     </div>
@@ -121,12 +174,10 @@
         </main>
     </section>
 
-    <!-- Tab 2: Twin Paradox -->
+    <!-- Tab 3: Twin Paradox -->
     <section id="tab2" class="flex-1 flex flex-col min-h-0 hidden">
         <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800">
-            <div class="flex-1 w-full text-center xl:text-left mb-4 xl:mb-0">
-                <!-- 텍스트 삭제됨 -->
-            </div>
+            <div class="flex-1 w-full text-center xl:text-left mb-4 xl:mb-0"></div>
             <div class="flex flex-wrap justify-center items-center gap-2 md:gap-4 w-full xl:w-auto">
                 <div class="flex items-center justify-center bg-gray-800 p-3 px-5 rounded-lg border border-gray-700 flex-1 md:flex-none">
                     <div class="text-center px-2"><div class="text-xs text-gray-400 mb-1">현재 속도</div><div class="text-xl font-bold text-cyan-400 tracking-wider" id="valV2">0.00c</div></div>
@@ -140,7 +191,7 @@
         </div>
         <main class="flex-1 grid grid-cols-2 gap-2 md:gap-4 min-h-0">
             <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-cyan-400">관찰자: 지구 (형)</h2></div>
+                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-cyan-400">관찰자: 지구</h2></div>
                 <div class="flex-1 relative p-1"><canvas id="cvsEarth2" class="w-full h-full"></canvas></div>
                 <div class="grid grid-cols-2 gap-px bg-gray-700 h-16">
                     <div class="bg-gray-900 flex flex-col justify-center items-center"><span class="text-[9px] text-cyan-400">지구 시간</span><div class="text-lg font-bold text-cyan-400" id="timeE2_E">0.00s</div></div>
@@ -148,7 +199,7 @@
                 </div>
             </div>
             <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-fuchsia-400">관찰자: 우주선 (동생)</h2></div>
+                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-fuchsia-400">관찰자: 우주선</h2></div>
                 <div class="flex-1 relative p-1"><canvas id="cvsShip2" class="w-full h-full"></canvas></div>
                 <div class="grid grid-cols-2 gap-px bg-gray-700 h-16">
                     <div class="bg-gray-900 flex flex-col justify-center items-center"><span class="text-[9px] text-cyan-400">지구 시간</span><div class="text-lg font-bold text-cyan-400" id="timeE2_S">0.00s</div></div>
@@ -158,11 +209,11 @@
         </main>
     </section>
 
-    <!-- Tab 3: Equivalence Principle -->
+    <!-- Tab 4: Equivalence Principle -->
     <section id="tab3" class="flex-1 flex flex-col min-h-0 hidden">
         <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800">
             <div class="mb-4 xl:mb-0">
-                <h2 class="text-sm font-bold text-yellow-300">중력 = 관성력 (등가 원리)</h2>
+                <h2 class="text-sm font-bold text-yellow-300">중력 = 관성력</h2>
                 <div class="flex items-center space-x-2 mt-2">
                     <label class="text-[10px] md:text-xs text-cyan-400">가속도 / 중력 크기 조절:</label>
                     <input type="range" id="gravitySlider" min="1" max="50" step="0.1" value="9.8" class="w-32">
@@ -171,34 +222,31 @@
             </div>
             <div class="flex space-x-2">
                 <button id="btnDrop3" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-sm">공 놓기</button>
-                <!-- 새로 추가된 빛 쏘기 버튼 -->
                 <button id="btnShootLight3" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold text-sm">빛 쏘기</button>
                 <button id="btnReset3" class="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded font-bold text-sm">리셋</button>
             </div>
         </div>
         <main class="flex-1 grid grid-cols-2 gap-2 md:gap-4 min-h-0">
-            <!-- Left Canvas Area -->
             <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
                 <div class="p-1.5 bg-gray-800 border-b border-gray-700 flex justify-center">
                     <select id="selSceneLeft" class="bg-gray-700 text-white text-[10px] md:text-xs font-bold p-1.5 rounded border border-gray-600 outline-none w-full max-w-sm cursor-pointer">
-                        <option value="1" selected>1. 무중력 우주 & 등속 운동 (내부 시점)</option>
-                        <option value="2">2. 무중력 우주 & 등속 운동 (외부 시점)</option>
-                        <option value="3">3. 무중력 우주 & 가속 운동 (내부 시점)</option>
-                        <option value="4">4. 무중력 우주 & 가속 운동 (외부 시점)</option>
-                        <option value="5">5. 행성 표면 (중력 상태)</option>
+                        <option value="1" selected>1. 무중력 우주 & 등속 운동</option>
+                        <option value="2">2. 무중력 우주 & 등속 운동</option>
+                        <option value="3">3. 무중력 우주 & 가속 운동</option>
+                        <option value="4">4. 무중력 우주 & 가속 운동</option>
+                        <option value="5">5. 행성 표면</option>
                     </select>
                 </div>
                 <div class="flex-1 relative p-1"><canvas id="cvsSpace3" class="w-full h-full"></canvas></div>
             </div>
-            <!-- Right Canvas Area -->
             <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
                 <div class="p-1.5 bg-gray-800 border-b border-gray-700 flex justify-center">
                     <select id="selSceneRight" class="bg-gray-700 text-white text-[10px] md:text-xs font-bold p-1.5 rounded border border-gray-600 outline-none w-full max-w-sm cursor-pointer">
-                        <option value="1">1. 무중력 우주 & 등속 운동 (내부 시점)</option>
-                        <option value="2" selected>2. 무중력 우주 & 등속 운동 (외부 시점)</option>
-                        <option value="3">3. 무중력 우주 & 가속 운동 (내부 시점)</option>
-                        <option value="4">4. 무중력 우주 & 가속 운동 (외부 시점)</option>
-                        <option value="5">5. 행성 표면 (중력 상태)</option>
+                        <option value="1">1. 무중력 우주 & 등속 운동</option>
+                        <option value="2" selected>2. 무중력 우주 & 등속 운동</option>
+                        <option value="3">3. 무중력 우주 & 가속 운동</option>
+                        <option value="4">4. 무중력 우주 & 가속 운동</option>
+                        <option value="5">5. 행성 표면</option>
                     </select>
                 </div>
                 <div class="flex-1 relative p-1"><canvas id="cvsPlanet3" class="w-full h-full"></canvas></div>
@@ -209,470 +257,237 @@
     <script>
         // --- Shared Constants & Helpers ---
         const c = 100; // px/s
-        const V_HEIGHT_M = 1.0; // 빛시계 높이 1m
-        const LC_HEIGHT = 50;  // 1m를 50px로 표현
+        const V_HEIGHT_M = 1.0; 
+        const LC_HEIGHT = 50;  
         const PX_TO_M = V_HEIGHT_M / LC_HEIGHT; 
-        const BOUNCE_TIME = 2 * (LC_HEIGHT / c); // 1회 왕복 시간 = 1s
+        const BOUNCE_TIME = 2 * (LC_HEIGHT / c); 
 
         // --- Tab Management ---
         let activeTab = 1;
         const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabSections = [document.getElementById('tab1'), document.getElementById('tab2'), document.getElementById('tab3')];
+        const tabSections = [document.getElementById('tab0'), document.getElementById('tab1'), document.getElementById('tab2'), document.getElementById('tab3')];
         
         tabBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 tabBtns.forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                activeTab = parseInt(e.target.getAttribute('data-tab'));
+                btn.classList.add('active');
+                activeTab = parseInt(btn.getAttribute('data-tab'));
                 tabSections.forEach((s, i) => i + 1 === activeTab ? s.classList.remove('hidden') : s.classList.add('hidden'));
                 handleResize();
             });
         });
 
-        // --- Global Render Helpers ---
+        const ci0 = document.getElementById('cvsInside0'), co0 = document.getElementById('cvsOutside0');
+        const ce1 = document.getElementById('cvsEarth1'), cs1 = document.getElementById('cvsShip1');
+        const ce2 = document.getElementById('cvsEarth2'), cs2 = document.getElementById('cvsShip2');
+        const cs3 = document.getElementById('cvsSpace3'), cp3 = document.getElementById('cvsPlanet3');
+
+        function handleResize() {
+            [ci0, co0, ce1, cs1, ce2, cs2, cs3, cp3].forEach(cvs => { if(cvs && cvs.parentElement) { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; }});
+        }
+        window.addEventListener('resize', handleResize);
+
         function drawGrid(ctx, w, h, v, gamma, isMovingLeft, time, expand = 1) {
             ctx.save();
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
             ctx.lineWidth = expand; 
-            
             let logicalSpacing = 50 / gamma;
             let minLogicalSpacing = 20 * expand;
             while (logicalSpacing < minLogicalSpacing) { logicalSpacing *= 5; }
-
             const startX = -w * expand;
             const endX = w * (1 + expand);
             const startY = -h * expand;
             const endY = h * (1 + expand);
-
             let offset = v !== 0 ? (time * v) % logicalSpacing : 0;
             if (isMovingLeft) offset = -offset;
-
             ctx.beginPath();
             let start = Math.floor(startX / logicalSpacing) * logicalSpacing + offset;
-            for (let x = start; x < endX; x += logicalSpacing) { 
-                ctx.moveTo(x, startY); ctx.lineTo(x, endY); 
-            }
-            for (let y = Math.floor(startY/logicalSpacing)*logicalSpacing; y < endY; y += logicalSpacing) { 
-                ctx.moveTo(startX, y); ctx.lineTo(endX, y); 
-            }
-            ctx.stroke();
-            ctx.restore();
+            for (let x = start; x < endX; x += logicalSpacing) { ctx.moveTo(x, startY); ctx.lineTo(x, endY); }
+            for (let y = Math.floor(startY/logicalSpacing)*logicalSpacing; y < endY; y += logicalSpacing) { ctx.moveTo(startX, y); ctx.lineTo(endY, y); }
+            ctx.stroke(); ctx.restore();
         }
 
         function drawAttachedHUD(ctx, isShip, angle) {
-            const r = 24; 
-            const cy = 60; 
-            
-            ctx.save();
-            ctx.translate(0, cy);
-            
-            ctx.beginPath();
-            ctx.arc(0, 0, r, 0, Math.PI*2);
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
-            ctx.fill();
-            ctx.strokeStyle = isShip ? '#f0abfc' : '#00f3ff';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(-12, -12);
-            ctx.lineTo(12, -12);
-            ctx.strokeStyle = '#94a3b8';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            ctx.translate(0, -12);
-            ctx.rotate(angle);
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(0, 20);
-            ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.arc(0, 20, 4, 0, Math.PI*2);
-            ctx.fillStyle = isShip ? '#fbbf24' : '#38bdf8'; 
-            ctx.fill();
-            
+            const r = 24; const cy = 60; ctx.save(); ctx.translate(0, cy);
+            ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fillStyle = 'rgba(15, 23, 42, 0.8)'; ctx.fill();
+            ctx.strokeStyle = isShip ? '#f0abfc' : '#00f3ff'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-12, -12); ctx.lineTo(12, -12); ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.stroke();
+            ctx.translate(0, -12); ctx.rotate(angle); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 20);
+            ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.beginPath(); ctx.arc(0, 20, 4, 0, Math.PI*2); ctx.fillStyle = isShip ? '#fbbf24' : '#38bdf8'; ctx.fill();
             ctx.restore();
         }
 
         function drawPlanet(ctx, x, y, gamma, angle) {
-            ctx.save(); ctx.translate(x, y);
-            const r = 24; 
+            ctx.save(); ctx.translate(x, y); const r = 24; 
             ctx.beginPath(); ctx.ellipse(0, 0, r / gamma, r, 0, 0, Math.PI * 2); ctx.fillStyle = '#1e3a8a'; ctx.fill();
             ctx.beginPath(); ctx.ellipse(-6 / gamma, -6, 12 / gamma, 12, 0, 0, Math.PI * 2); ctx.fillStyle = '#15803d'; ctx.fill();
             ctx.beginPath(); ctx.ellipse(10 / gamma, 10, 10 / gamma, 6, 0.5, 0, Math.PI * 2); ctx.fillStyle = '#15803d'; ctx.fill();
             ctx.beginPath(); ctx.ellipse(0, 0, r / gamma, r, 0, 0, Math.PI * 2); ctx.lineWidth = 1; ctx.strokeStyle = '#93c5fd'; ctx.stroke();
-            
             ctx.fillStyle = '#fff'; ctx.font = '10px Orbitron'; ctx.textAlign = 'center'; ctx.fillText('EARTH', 0, -32);
-            
-            if (angle !== undefined) drawAttachedHUD(ctx, false, angle);
-            ctx.restore();
+            if (angle !== undefined) drawAttachedHUD(ctx, false, angle); ctx.restore();
         }
 
         function drawShip(ctx, x, y, gamma, isM, isR, flip = false, angle) {
-            ctx.save(); ctx.translate(x, y);
-            const w = 20 / gamma; const h = 8;
-            ctx.save(); if (flip) ctx.scale(-1, 1);
+            ctx.save(); ctx.translate(x, y); const w = 20 / gamma; const h = 8; ctx.save(); if (flip) ctx.scale(-1, 1);
             if (isM) {
                 ctx.beginPath(); ctx.moveTo(-w, -h/2); ctx.lineTo(-w - 25, 0); ctx.lineTo(-w, h/2);
-                const grad = ctx.createLinearGradient(-w, 0, -w - 25, 0);
-                grad.addColorStop(0, '#fffbeb'); grad.addColorStop(0.3, '#fde047'); grad.addColorStop(1, '#ef4444');
+                const grad = ctx.createLinearGradient(-w, 0, -w - 25, 0); grad.addColorStop(0, '#fffbeb'); grad.addColorStop(0.3, '#fde047'); grad.addColorStop(1, '#ef4444');
                 ctx.fillStyle = grad; ctx.fill();
             }
             if (isR) {
                 ctx.beginPath(); ctx.moveTo(w, -h/2); ctx.lineTo(w + 25, 0); ctx.lineTo(w, h/2);
-                const grad = ctx.createLinearGradient(w, 0, w + 25, 0);
-                grad.addColorStop(0, '#fffbeb'); grad.addColorStop(0.3, '#60a5fa'); grad.addColorStop(1, '#1e3a8a');
+                const grad = ctx.createLinearGradient(w, 0, w + 25, 0); grad.addColorStop(0, '#fffbeb'); grad.addColorStop(0.3, '#60a5fa'); grad.addColorStop(1, '#1e3a8a');
                 ctx.fillStyle = grad; ctx.fill();
             }
-            ctx.fillStyle = '#475569';
-            ctx.beginPath(); ctx.moveTo(-w, -h); ctx.lineTo(-w*0.5, -h); ctx.lineTo(-w*0.8, -h-3); ctx.lineTo(-w-1, -h-3); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = '#475569'; ctx.beginPath(); ctx.moveTo(-w, -h); ctx.lineTo(-w*0.5, -h); ctx.lineTo(-w*0.8, -h-3); ctx.lineTo(-w-1, -h-3); ctx.closePath(); ctx.fill();
             ctx.beginPath(); ctx.moveTo(-w, h); ctx.lineTo(-w*0.5, h); ctx.lineTo(-w*0.8, h+3); ctx.lineTo(-w-1, h+3); ctx.closePath(); ctx.fill();
             ctx.beginPath(); ctx.moveTo(-w, -h); ctx.lineTo(w*0.4, -h); ctx.lineTo(w, 0); ctx.lineTo(w*0.4, h); ctx.lineTo(-w, h); ctx.lineTo(-w*0.8, 0); ctx.closePath();
-            const bG = ctx.createLinearGradient(0, -h, 0, h);
-            bG.addColorStop(0, '#f8fafc'); bG.addColorStop(0.5, '#cbd5e1'); bG.addColorStop(1, '#94a3b8');
+            const bG = ctx.createLinearGradient(0, -h, 0, h); bG.addColorStop(0, '#f8fafc'); bG.addColorStop(0.5, '#cbd5e1'); bG.addColorStop(1, '#94a3b8');
             ctx.fillStyle = bG; ctx.fill(); ctx.lineWidth = 1; ctx.strokeStyle = '#64748b'; ctx.stroke();
             ctx.beginPath(); ctx.ellipse(w*0.2, -1.5, 4 / gamma, 2.5, 0.1, 0, Math.PI * 2); ctx.fillStyle = '#38bdf8'; ctx.fill(); ctx.stroke();
-            ctx.restore();
-            
-            ctx.fillStyle = '#fff'; ctx.font = '10px Orbitron'; ctx.textAlign = 'center'; ctx.fillText('SHIP', 0, -22);
-            
-            if (angle !== undefined) drawAttachedHUD(ctx, true, angle);
-            ctx.restore();
+            ctx.restore(); ctx.fillStyle = '#fff'; ctx.font = '10px Orbitron'; ctx.textAlign = 'center'; ctx.fillText('SHIP', 0, -22);
+            if (angle !== undefined) drawAttachedHUD(ctx, true, angle); ctx.restore();
         }
 
         function drawClock(ctx, x, y, t, clr) {
-            ctx.save(); ctx.translate(x, y);
-            ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI * 2); ctx.fillStyle = '#0f172a'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = clr; ctx.stroke();
+            ctx.save(); ctx.translate(x, y); ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI * 2); ctx.fillStyle = '#0f172a'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = clr; ctx.stroke();
             for(let i=0; i<12; i++) { ctx.rotate(Math.PI / 6); ctx.beginPath(); ctx.moveTo(17, 0); ctx.lineTo(20, 0); ctx.strokeStyle = '#475569'; ctx.stroke(); }
-            const ang = (t % 12) / 12 * (Math.PI * 2) - Math.PI / 2;
-            ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(ang) * 16, Math.sin(ang) * 16); ctx.strokeStyle = clr; ctx.lineWidth = 2; ctx.stroke();
-            ctx.restore();
+            const ang = (t % 12) / 12 * (Math.PI * 2) - Math.PI / 2; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(ang) * 16, Math.sin(ang) * 16); ctx.strokeStyle = clr; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
         }
 
         function drawLightClock(ctx, x, y, t, clr, trails) {
-            ctx.save(); ctx.strokeStyle = clr; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(x - 12, y - 25); ctx.lineTo(x + 12, y - 25); ctx.moveTo(x - 12, y + 25); ctx.lineTo(x + 12, y + 25); ctx.stroke();
-            const phase = (t % BOUNCE_TIME) / BOUNCE_TIME;
-            const py = phase < 0.5 ? -25 + (phase / 0.5) * 50 : 25 - ((phase - 0.5) / 0.5) * 50;
-            const ay = y + py;
+            ctx.save(); ctx.strokeStyle = clr; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 12, y - 25); ctx.lineTo(x + 12, y - 25); ctx.moveTo(x - 12, y + 25); ctx.lineTo(x + 12, y + 25); ctx.stroke();
+            const phase = (t % BOUNCE_TIME) / BOUNCE_TIME; const py = phase < 0.5 ? -25 + (phase / 0.5) * 50 : 25 - ((phase - 0.5) / 0.5) * 50; const ay = y + py;
             if (trails) {
-                if (trails.length > 0 && Math.abs(x - trails[trails.length-1].x) > 100) trails.length = 0;
-                trails.push({x, y: ay}); 
-                if (trails.length > 10000) trails.shift(); 
-                
-                ctx.beginPath(); ctx.moveTo(trails[0].x, trails[0].y);
-                for(let p of trails) ctx.lineTo(p.x, p.y);
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]);
+                if (trails.length > 0 && Math.abs(x - trails[trails.length-1].x) > 1000) trails.length = 0;
+                trails.push({x, y: ay}); if (trails.length > 500) trails.shift(); ctx.beginPath(); ctx.moveTo(trails[0].x, trails[0].y);
+                for(let p of trails) ctx.lineTo(p.x, p.y); ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]);
             }
-            ctx.beginPath(); ctx.arc(x, ay, 3, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
-            ctx.restore();
+            ctx.beginPath(); ctx.arc(x, ay, 3, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();
         }
+
+        function drawHorizontalShipAndHuman(ctx, x, y, runFire) {
+            ctx.strokeStyle = '#475569'; ctx.lineWidth = 4; ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
+            ctx.beginPath(); ctx.moveTo(x - 90, y + 10); ctx.lineTo(x + 50, y + 10); ctx.quadraticCurveTo(x + 130, y - 50, x + 50, y - 110); ctx.lineTo(x - 90, y - 110); ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#334155'; ctx.fillRect(x - 100, y - 85, 10, 70);
+            if (runFire) {
+                ctx.beginPath(); ctx.moveTo(x - 100, y - 70); ctx.lineTo(x - 160, y - 50); ctx.lineTo(x - 100, y - 30);
+                const gr = ctx.createLinearGradient(x - 100, 0, x - 160, 0); gr.addColorStop(0, '#fde047'); gr.addColorStop(1, '#ef4444'); ctx.fillStyle = gr; ctx.fill();
+            }
+            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x - 25, y - 85, 8, 0, Math.PI*2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x - 25, y - 77); ctx.lineTo(x - 25, y - 40); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x - 25, y - 40); ctx.lineTo(x - 35, y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x - 25, y - 40); ctx.lineTo(x - 15, y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x - 25, y - 65); ctx.lineTo(x - 6, y - 65); ctx.stroke(); 
+        }
+
+        // --- TAB 0 Logic (광속 불변의 법칙) ---
+        const cxi0 = ci0 ? ci0.getContext('2d') : null, cxo0 = co0 ? co0.getContext('2d') : null;
+        const s0 = document.getElementById('velSlider0'), v0 = document.getElementById('valV0');
+
+        let vf0 = 0.5, t0 = 0;
+        let objType0 = null, objActive0 = false, tObj0 = 0, shipX_launch = 0, isHit0 = false;
+        let lightPath0 = []; 
+
+        const SHIP_COLLISION_DIST = 93.5; // 볼록한 면에 정확히 닿도록 충돌 거리 수정 (기존 136 -> 93.5)
+
+        if (s0) {
+            s0.addEventListener('input', e => {
+                vf0 = parseFloat(e.target.value);
+                v0.textContent = vf0.toFixed(2) + 'c';
+            });
+        }
+
+        document.getElementById('btnThrowBall0')?.addEventListener('click', () => { 
+            objType0 = 'ball'; objActive0 = true; tObj0 = 0; isHit0 = false;
+            shipX_launch = 50 + (vf0 * 100) * t0; 
+            lightPath0 = []; 
+        });
+        document.getElementById('btnShootLight0')?.addEventListener('click', () => { 
+            objType0 = 'light'; objActive0 = true; tObj0 = 0; isHit0 = false;
+            shipX_launch = 50 + (vf0 * 100) * t0; 
+            lightPath0 = []; 
+        });
+        document.getElementById('btnReset0')?.addEventListener('click', () => { 
+            objActive0 = false; tObj0 = 0; t0 = 0; isHit0 = false; shipX_launch = 0;
+            lightPath0 = []; 
+        });
 
         // --- TAB 1 Logic ---
         const s1 = document.getElementById('velSlider1'), v1 = document.getElementById('valV1'), g1 = document.getElementById('valGamma1');
-        const ce1 = document.getElementById('cvsEarth1'), cs1 = document.getElementById('cvsShip1');
         const cxe1 = ce1.getContext('2d'), cxs1 = cs1.getContext('2d');
         const presets1 = document.querySelectorAll('.preset-btn-1');
+        let run1 = false, run1_E = false, run1_S = false, vf1 = 0, gm1 = 1, pxv1 = 0, t1_E = 0, t1_S = 0, tr1_E = [], tr1_S = [], tr1_E_stat = [], tr1_S_stat = [], targetBounces1 = 1;
 
-        let run1 = false, run1_E = false, run1_S = false, vf1 = 0, gm1 = 1, pxv1 = 0, t1_E = 0, t1_S = 0, tr1_E = [], tr1_S = [], tr1_E_stat = [], tr1_S_stat = [];
-        let targetBounces1 = 1;
-
-        s1.addEventListener('input', e => {
-            vf1 = parseFloat(e.target.value); gm1 = 1 / Math.sqrt(1 - vf1*vf1); pxv1 = vf1 * c;
-            v1.textContent = vf1.toFixed(2) + 'c'; g1.textContent = gm1.toFixed(2);
-            resetSim1();
-        });
-
-        function resetSim1() {
-            run1 = false; run1_E = false; run1_S = false;
-            t1_E = 0; t1_S = 0; 
-            tr1_E = []; tr1_S = []; tr1_E_stat = []; tr1_S_stat = [];
-            document.getElementById('btnPlay1').textContent = '시작';
-            updateData1(0, 0, 0, 0);
+        if(s1) {
+            s1.addEventListener('input', e => { vf1 = parseFloat(e.target.value); gm1 = 1 / Math.sqrt(1 - vf1*vf1); pxv1 = vf1 * c; v1.textContent = vf1.toFixed(2) + 'c'; g1.textContent = gm1.toFixed(2); resetSim1(); });
         }
-
-        function updateSim1State(playing) {
-            run1 = playing;
-            run1_E = playing && (t1_E < targetBounces1 * BOUNCE_TIME * gm1);
-            run1_S = playing && (t1_S < targetBounces1 * BOUNCE_TIME);
-            document.getElementById('btnPlay1').textContent = run1 ? '일시정지' : '시작';
-        }
-
-        presets1.forEach(btn => {
-            btn.addEventListener('click', e => {
-                presets1.forEach(b => {
-                    b.classList.remove('active', 'bg-cyan-600');
-                    b.classList.add('bg-gray-700');
-                });
-                e.target.classList.remove('bg-gray-700');
-                e.target.classList.add('active', 'bg-cyan-600');
-                targetBounces1 = parseInt(e.target.getAttribute('data-val'));
-                resetSim1();
-                updateSim1State(true); 
-            });
-        });
-
-        document.getElementById('btnPlay1').addEventListener('click', e => { 
-            if (t1_E >= targetBounces1 * BOUNCE_TIME * gm1 && t1_S >= targetBounces1 * BOUNCE_TIME) {
-                t1_E = 0; t1_S = 0;
-                tr1_E = []; tr1_S = []; tr1_E_stat = []; tr1_S_stat = [];
-            }
-            updateSim1State(!run1); 
-        });
-        document.getElementById('btnReset1').addEventListener('click', () => { resetSim1(); });
-
-        function updateData1(tE_E, tS_E, tE_S, tS_S) {
-            document.getElementById('timeE1_E').textContent = tE_E.toFixed(2)+'s'; 
-            document.getElementById('timeS1_E').textContent = tS_E.toFixed(2)+'s';
-            document.getElementById('timeE1_S').textContent = tE_S.toFixed(2)+'s'; 
-            document.getElementById('timeS1_S').textContent = tS_S.toFixed(2)+'s';
-            
-            const dE_E = tE_E * 2.0; 
-            const dS_E = tE_E * 2.0; 
-            const dE_S = tS_S * 2.0; 
-            const dS_S = tS_S * 2.0;
-
-            document.getElementById('distE1_E').textContent = dE_E.toFixed(2);
-            document.getElementById('distS1_E').textContent = dS_E.toFixed(2);
-            document.getElementById('distE1_S').textContent = dE_S.toFixed(2);
-            document.getElementById('distS1_S').textContent = dS_S.toFixed(2);
-        }
+        function resetSim1() { run1 = false; run1_E = false; run1_S = false; t1_E = 0; t1_S = 0; tr1_E = []; tr1_S = []; tr1_E_stat = []; tr1_S_stat = []; document.getElementById('btnPlay1').textContent = '시작'; updateData1(0, 0, 0, 0); }
+        function updateSim1State(playing) { run1 = playing; run1_E = playing && (t1_E < targetBounces1 * BOUNCE_TIME * gm1); run1_S = playing && (t1_S < targetBounces1 * BOUNCE_TIME); document.getElementById('btnPlay1').textContent = run1 ? '일시정지' : '시작'; }
+        presets1.forEach(btn => { btn.addEventListener('click', e => { presets1.forEach(b => { b.classList.remove('active', 'bg-cyan-600'); b.classList.add('bg-gray-700'); }); e.target.classList.remove('bg-gray-700'); e.target.classList.add('active', 'bg-cyan-600'); targetBounces1 = parseInt(e.target.getAttribute('data-val')); resetSim1(); updateSim1State(true); }); });
+        document.getElementById('btnPlay1')?.addEventListener('click', e => { if (t1_E >= targetBounces1 * BOUNCE_TIME * gm1 && t1_S >= targetBounces1 * BOUNCE_TIME) { t1_E = 0; t1_S = 0; tr1_E = []; tr1_S = []; tr1_E_stat = []; tr1_S_stat = []; } updateSim1State(!run1); });
+        document.getElementById('btnReset1')?.addEventListener('click', () => { resetSim1(); });
+        function updateData1(tE_E, tS_E, tE_S, tS_S) { if(document.getElementById('timeE1_E')) { document.getElementById('timeE1_E').textContent = tE_E.toFixed(2)+'s'; document.getElementById('timeS1_E').textContent = tS_E.toFixed(2)+'s'; document.getElementById('timeE1_S').textContent = tE_S.toFixed(2)+'s'; document.getElementById('timeS1_S').textContent = tS_S.toFixed(2)+'s'; const dE_E = tE_E * 2.0; const dS_E = tE_E * 2.0; const dE_S = tS_S * 2.0; const dS_S = tS_S * 2.0; document.getElementById('distE1_E').textContent = dE_E.toFixed(2); document.getElementById('distS1_E').textContent = dS_E.toFixed(2); document.getElementById('distE1_S').textContent = dE_S.toFixed(2); document.getElementById('distS1_S').textContent = dS_S.toFixed(2); }}
 
         // --- TAB 2 Logic ---
-        const ce2 = document.getElementById('cvsEarth2'), cs2 = document.getElementById('cvsShip2');
         const cxe2 = ce2.getContext('2d'), cxs2 = cs2.getContext('2d');
         const v2 = document.getElementById('valV2');
-        
-        let t2E = 0, t2S = 0, vf2 = 0, x2 = 0, thrust2 = 0, done2 = false, auto2 = false;
-        let hasStarted2 = false;
-        let currentPendulumAngle = 0; 
-        let targetPendulumAngle = 0;
+        let t2E = 0, t2S = 0, vf2 = 0, x2 = 0, thrust2 = 0, done2 = false, auto2 = false, hasStarted2 = false, currentPendulumAngle = 0, targetPendulumAngle = 0;
+        const acc2 = 0.15;
 
-        const acc2 = 0.5;
         const bF = document.getElementById('btnThrustFwd'), bR = document.getElementById('btnThrustRev');
         const startF = e => { e.preventDefault(); if(!done2 && !auto2) { thrust2 = 1; hasStarted2 = true; } };
         const startR = e => { e.preventDefault(); if(!done2 && !auto2) { thrust2 = -1; hasStarted2 = true; } };
         const endT = e => { if(!auto2) thrust2 = 0; };
-        bF.addEventListener('mousedown', startF); bF.addEventListener('touchstart', startF);
-        bR.addEventListener('mousedown', startR); bR.addEventListener('touchstart', startR);
+        if(bF) { bF.addEventListener('mousedown', startF); bF.addEventListener('touchstart', startF); }
+        if(bR) { bR.addEventListener('mousedown', startR); bR.addEventListener('touchstart', startR); }
         window.addEventListener('mouseup', endT); window.addEventListener('touchend', endT);
-        
-        document.getElementById('btnReset2').addEventListener('click', () => { 
-            t2E = 0; t2S = 0; vf2 = 0; x2 = 0; thrust2 = 0; done2 = false; auto2 = false; hasStarted2 = false;
-            currentPendulumAngle = 0;
-            targetPendulumAngle = 0;
-            updateUI2(0, 0, 0, 0);
-        });
-
-        function updateUI2(tE_E, tS_E, tE_S, tS_S) {
-            document.getElementById('timeE2_E').textContent = tE_E.toFixed(2)+'s'; 
-            document.getElementById('timeS2_E').textContent = tS_E.toFixed(2)+'s';
-            document.getElementById('timeE2_S').textContent = tE_S.toFixed(2)+'s'; 
-            document.getElementById('timeS2_S').textContent = tS_S.toFixed(2)+'s';
-            
-            // 0에 가까운 값은 부호 없는 0.00c로 처리하고, 양수일 때만 + 기호를 붙입니다
-            let displayV = Math.abs(vf2) < 0.005 ? 0 : vf2;
-            v2.textContent = (displayV > 0 ? '+' : '') + displayV.toFixed(2) + 'c';
-        }
+        document.getElementById('btnReset2')?.addEventListener('click', () => { t2E = 0; t2S = 0; vf2 = 0; x2 = 0; thrust2 = 0; done2 = false; auto2 = false; hasStarted2 = false; currentPendulumAngle = 0; targetPendulumAngle = 0; updateUI2(0, 0, 0, 0); });
+        function updateUI2(tE_E, tS_E, tE_S, tS_S) { if(v2) { let displayV = Math.abs(vf2) < 0.005 ? 0 : vf2; v2.textContent = (displayV > 0 ? '+' : '') + displayV.toFixed(2) + 'c'; document.getElementById('timeE2_E').textContent = tE_E.toFixed(2)+'s'; document.getElementById('timeS2_E').textContent = tS_E.toFixed(2)+'s'; document.getElementById('timeE2_S').textContent = tE_S.toFixed(2)+'s'; document.getElementById('timeS2_S').textContent = tS_S.toFixed(2)+'s'; }}
 
         // --- TAB 3 Logic ---
-        const cs3 = document.getElementById('cvsSpace3'), cp3 = document.getElementById('cvsPlanet3');
         const cxs3 = cs3.getContext('2d'), cxp3 = cp3.getContext('2d');
         const gs3 = document.getElementById('gravitySlider'), gv3 = document.getElementById('gravityVal');
         const selLeft = document.getElementById('selSceneLeft'), selRight = document.getElementById('selSceneRight');
+        let run3 = false, runLight3 = false, stateL = { t3: 0, tLight: 0, tScene: 0, stopped: false }, stateR = { t3: 0, tLight: 0, tScene: 0, stopped: false }, ug3 = 9.8;
+
+        if(gs3) {
+            gs3.addEventListener('input', e => { ug3 = parseFloat(e.target.value); gv3.textContent = ug3.toFixed(1) + ' m/s²'; });
+        }
+        if(selLeft) selLeft.addEventListener('change', () => { resetSim3(); });
+        if(selRight) selRight.addEventListener('change', () => { resetSim3(); });
+        function resetSim3() { run3 = false; runLight3 = false; stateL = { t3: 0, tLight: 0, tScene: 0, stopped: false }; stateR = { t3: 0, tLight: 0, tScene: 0, stopped: false }; }
+        document.getElementById('btnDrop3')?.addEventListener('click', () => { run3 = true; }); 
+        document.getElementById('btnShootLight3')?.addEventListener('click', () => { runLight3 = true; }); 
+        document.getElementById('btnReset3')?.addEventListener('click', resetSim3);
         
-        // 공과 빛, 그리고 좌/우 독립 상황(Scene)을 제어할 상태 변수들
-        let run3 = false, runLight3 = false;
-        let stateL = { t3: 0, tLight: 0, tScene: 0, stopped: false };
-        let stateR = { t3: 0, tLight: 0, tScene: 0, stopped: false };
-        let ug3 = 9.8;
-
-        gs3.addEventListener('input', e => {
-            ug3 = parseFloat(e.target.value); 
-            gv3.textContent = ug3.toFixed(1) + ' m/s²';
-        });
-
-        selLeft.addEventListener('change', () => { resetSim3(); });
-        selRight.addEventListener('change', () => { resetSim3(); });
-
-        function resetSim3() { 
-            run3 = false; 
-            runLight3 = false;
-            stateL = { t3: 0, tLight: 0, tScene: 0, stopped: false };
-            stateR = { t3: 0, tLight: 0, tScene: 0, stopped: false };
-        }
-
-        document.getElementById('btnDrop3').addEventListener('click', () => {
-            run3 = true;
-        });
-        document.getElementById('btnShootLight3').addEventListener('click', () => {
-            runLight3 = true;
-        });
-        document.getElementById('btnReset3').addEventListener('click', resetSim3);
-
-        // --- TAB 3 Unified Drawing Function ---
         function drawScenario3(ctx, w, h, type, state) {
-            let { t3, tLight: tLight3, tScene: t_scene_s } = state;
-            let f0 = h * 0.85; // 기본 바닥 높이
-            let b0 = f0 - 65;  // 기본 공(빛 발사) 높이
-            
-            let a = (type === '3' || type === '4' || type === '5') ? ug3 * 15 : 0;
-            let v_x = 60; // 빛의 속도를 기존 120에서 50% 수준인 60으로 감소
-            let ship_v_y = 80;
-
-            // 전체 상황 시간(t_scene_s)에 따른 전역 바닥 위치 계산
-            function getFloorY(t) {
-                if (type === '4') return f0 - 0.5 * a * t * t;
-                if (type === '2') return (h + 150) - ((t * ship_v_y) % (h + 300));
-                return f0;
-            }
-
-            let currentFloorY = getFloorY(t_scene_s);
-
-            // 바닥 기준 공의 상대적 높이
-            let ballRelY = 65;
-            let floatX = 0;
-            if (run3) {
-                if (type === '1' || type === '2') {
-                    // 공의 부유 속도를 기존 1.5, 2.5에서 50%인 0.75, 1.25로 감소 (사인 함수로 변경하여 튕김 방지)
-                    ballRelY = 65 - Math.sin(t3 * 0.75) * 8;
-                    floatX = Math.sin(t3 * 1.25) * 8;
-                } else {
-                    ballRelY = 65 - 0.5 * a * t3 * t3;
-                }
-            }
-            if (ballRelY <= 6) ballRelY = 6; // 공 반지름(6) 바닥 관통 방지
-            
-            let ballY = currentFloorY - ballRelY;
-            let ballX = w / 2 + floatX;
-
-            let isSpace = (type !== '5');
-            let starsMoving = (type === '1' || type === '3');
-            let starsOffset = 0;
-            if (starsMoving) {
-                if (type === '1') starsOffset = (t_scene_s * ship_v_y) % h;
-                if (type === '3') starsOffset = (0.5 * a * t_scene_s * t_scene_s) % h;
-            }
-            
-            // --- 배경 그리기 ---
-            ctx.fillStyle = isSpace ? 'rgba(15, 23, 42, 1)' : '#0f172a';
-            ctx.fillRect(0, 0, w, h);
-            
-            if (isSpace) {
-                ctx.fillStyle = '#fff';
-                for(let i=1; i<=40; i++) {
-                    // Math.sin을 활용한 고정 난수(Pseudo-random) 생성으로 불규칙하고 자연스러운 별 배치
-                    let randX = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
-                    let randY = Math.abs(Math.sin(i * 78.2330) * 43758.5453) % 1;
-                    
-                    let sx = randX * w;
-                    let sy = randY * h;
-                    
-                    if (starsMoving) sy = (sy + starsOffset) % h;
-                    ctx.fillRect(sx, sy, 1.5, 1.5);
-                }
-            } else {
-                ctx.fillStyle = '#166534'; // 초록색 땅
-                ctx.fillRect(0, currentFloorY, w, h - currentFloorY);
-            }
-            
-            // --- 우주선 / 방 그리기 ---
-            let floor = currentFloorY;
-            ctx.strokeStyle = '#475569'; ctx.lineWidth = 4; ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
-            ctx.beginPath(); ctx.moveTo(w/2-50, floor); ctx.lineTo(w/2-50, floor-140); 
-            ctx.quadraticCurveTo(w/2, floor-200, w/2+50, floor-140); ctx.lineTo(w/2+50, floor); 
-            ctx.closePath(); ctx.fill(); ctx.stroke();
-            
-            // 다리
-            ctx.beginPath(); ctx.moveTo(w/2-50, floor-30); ctx.lineTo(w/2-70, floor+10); ctx.lineTo(w/2-40, floor); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(w/2+50, floor-30); ctx.lineTo(w/2+70, floor+10); ctx.lineTo(w/2+40, floor); ctx.stroke();
-            
-            // 가속 시 불꽃 (🚀)
-            if ((run3 || runLight3) && (type === '3' || type === '4')) {
-                ctx.beginPath(); ctx.moveTo(w/2-20, floor); ctx.lineTo(w/2, floor+50); ctx.lineTo(w/2+20, floor);
-                const gr = ctx.createLinearGradient(0, floor, 0, floor+50); gr.addColorStop(0, '#fde047'); gr.addColorStop(1, '#ef4444');
-                ctx.fillStyle = gr; ctx.fill();
-            }
-            
-            // 저울 거치대
-            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.arc(w/2-25, floor-85, 8, 0, Math.PI*2); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(w/2-25, floor-77); ctx.lineTo(w/2-25, floor-40); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(w/2-25, floor-40); ctx.lineTo(w/2-35, floor); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(w/2-25, floor-40); ctx.lineTo(w/2-15, floor); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(w/2-25, floor-65); ctx.lineTo(w/2-6, floor-65); ctx.stroke();
-            
-            // 공 그리기
+            let { t3, tLight: tLight3, tScene: t_scene_s } = state; let f0 = h * 0.85, b0 = f0 - 65, a = (['3','4','5'].includes(type)) ? ug3 * 15 : 0, v_x = 60, ship_v_y = 80;
+            function getFloorY(t) { if (type === '4') return f0 - 0.5 * a * t * t; if (type === '2') return (h + 150) - ((t * ship_v_y) % (h + 300)); return f0; }
+            let currentFloorY = getFloorY(t_scene_s); let ballRelY = 65, floatX = 0;
+            if (run3) { if (['1','2'].includes(type)) { ballRelY = 65 - Math.sin(t3 * 0.75) * 8; floatX = Math.sin(t3 * 1.25) * 8; } else { ballRelY = 65 - 0.5 * a * t3 * t3; } }
+            if (ballRelY <= 6) ballRelY = 6; let ballY = currentFloorY - ballRelY, ballX = w / 2 + floatX, isSpace = (type !== '5'), starsMoving = (['1','3'].includes(type)), starsOffset = 0;
+            if (starsMoving) { if (type === '1') starsOffset = (t_scene_s * ship_v_y) % h; if (type === '3') starsOffset = (0.5 * a * t_scene_s * t_scene_s) % h; }
+            ctx.fillStyle = isSpace ? 'rgba(15, 23, 42, 1)' : '#0f172a'; ctx.fillRect(0, 0, w, h);
+            if (isSpace) { ctx.fillStyle = '#fff'; for(let i=1; i<=40; i++) { let randX = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1, randY = Math.abs(Math.sin(i * 78.2330) * 43758.5453) % 1, sx = randX * w, sy = (randY * h + starsOffset) % h; ctx.fillRect(sx, sy, 1.5, 1.5); } } else { ctx.fillStyle = '#166534'; ctx.fillRect(0, currentFloorY, w, h - currentFloorY); }
+            let floor = currentFloorY; ctx.strokeStyle = '#475569'; ctx.lineWidth = 4; ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
+            ctx.beginPath(); ctx.moveTo(w/2-50, floor); ctx.lineTo(w/2-50, floor-140); ctx.quadraticCurveTo(w/2, floor-200, w/2+50, floor-140); ctx.lineTo(w/2+50, floor); ctx.closePath(); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(w/2-50, floor-30); ctx.lineTo(w/2-70, floor+10); ctx.lineTo(w/2-40, floor); ctx.stroke(); ctx.beginPath(); ctx.moveTo(w/2+50, floor-30); ctx.lineTo(w/2+70, floor+10); ctx.lineTo(w/2+40, floor); ctx.stroke();
+            if ((run3 || runLight3) && ['3','4'].includes(type)) { ctx.beginPath(); ctx.moveTo(w/2-20, floor); ctx.lineTo(w/2, floor+50); ctx.lineTo(w/2+20, floor); const gr = ctx.createLinearGradient(0, floor, 0, floor+50); gr.addColorStop(0, '#fde047'); gr.addColorStop(1, '#ef4444'); ctx.fillStyle = gr; ctx.fill(); }
+            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(w/2-25, floor-85, 8, 0, Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(w/2-25, floor-77); ctx.lineTo(w/2-25, floor-40); ctx.stroke(); ctx.beginPath(); ctx.moveTo(w/2-25, floor-40); ctx.lineTo(w/2-35, floor); ctx.stroke(); ctx.beginPath(); ctx.moveTo(w/2-25, floor-40); ctx.lineTo(w/2-15, floor); ctx.stroke(); ctx.beginPath(); ctx.moveTo(w/2-25, floor-65); ctx.lineTo(w/2-6, floor-65); ctx.stroke();
             ctx.beginPath(); ctx.arc(ballX, ballY, 6, 0, Math.PI*2); ctx.fillStyle = '#fbbf24'; ctx.fill();
-
-            // --- 빛(레이저) 궤적 그리기 ---
             if (runLight3) {
-                ctx.beginPath();
-                let lx_end = w/2;
-                let ly_end = currentFloorY - 65;
-
-                // 빛이 출발한 바로 그 시점의 공의 위치를 정확히 역산하여 출발점(시작점)으로 고정
-                let t3_shoot = run3 ? Math.max(0, t3 - tLight3) : 0;
-                let drop_shoot = 0;
-                
-                if (type === '3' || type === '4' || type === '5') {
-                    drop_shoot = 0.5 * a * Math.pow(Math.min(t3_shoot, Math.sqrt(118/a)), 2);
+                ctx.beginPath(); let lx_end = w/2, ly_end = currentFloorY - 65, t3_shoot = run3 ? Math.max(0, t3 - tLight3) : 0, drop_shoot = 0;
+                if (['3','4','5'].includes(type)) { drop_shoot = 0.5 * a * Math.pow(Math.min(t3_shoot, Math.sqrt(118/a)), 2); }
+                let traceSteps = Math.ceil(tLight3 / 0.01); for (let step = 0; step <= traceSteps; step++) {
+                    let ti = Math.min(step * 0.01, tLight3), t_scene_ti = Math.max(0, t_scene_s - tLight3 + ti), floorY_ti = getFloorY(t_scene_ti), lightRelY_ti = (['1','2'].includes(type)) ? 65 : 65 - drop_shoot - 0.5 * a * ti * ti;
+                    if (lightRelY_ti <= 3) lightRelY_ti = 3; let lx = w/2 + v_x * ti; if (lx >= w/2 + 50) lx = w/2 + 50; let ly = floorY_ti - lightRelY_ti;
+                    if (step === 0) ctx.moveTo(lx, ly); else ctx.lineTo(lx, ly); lx_end = lx; ly_end = ly;
                 }
-
-                let traceSteps = Math.ceil(tLight3 / 0.01);
-                for (let step = 0; step <= traceSteps; step++) {
-                    let ti = Math.min(step * 0.01, tLight3);
-                    let t_scene_ti = Math.max(0, t_scene_s - tLight3 + ti);
-                    let floorY_ti = getFloorY(t_scene_ti);
-
-                    let lightRelY_ti = 65;
-                    if (type === '1' || type === '2') {
-                        // 공의 부유와 무관하게 고정된 팔 끝(65)에서 수평 발사
-                        lightRelY_ti = 65;
-                    } else {
-                        // 출발 당시의 낙하 거리에서 출발하여 포물선으로 추가 낙하
-                        lightRelY_ti = 65 - drop_shoot - 0.5 * a * ti * ti;
-                    }
-
-                    if (lightRelY_ti <= 3) lightRelY_ti = 3;
-
-                    // 빛의 X좌표: 언제나 팔 끝(w/2)에 고정하여 시작
-                    let lx = w/2 + v_x * ti;
-                    if (lx >= w/2 + 50) lx = w/2 + 50; // 우주선 오른쪽 벽에서 멈춤
-
-                    let ly = floorY_ti - lightRelY_ti;
-
-                    if (step === 0) ctx.moveTo(lx, ly);
-                    else ctx.lineTo(lx, ly);
-
-                    lx_end = lx; ly_end = ly;
-                }
-
-                // 궤적(잔상) 그리기 - 빨간색 실선
-                ctx.strokeStyle = '#ef4444'; 
-                ctx.lineWidth = 2;
-                ctx.setLineDash([]); 
-                ctx.stroke();
-
-                // 빛 입자(머리) 그리기 - 빨간색
-                ctx.beginPath();
-                ctx.arc(lx_end, ly_end, 3, 0, Math.PI*2);
-                ctx.fillStyle = '#fff';
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#ef4444'; 
-                ctx.fill();
-                ctx.shadowBlur = 0; 
+                ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.setLineDash([]); ctx.stroke(); ctx.beginPath(); ctx.arc(lx_end, ly_end, 3, 0, Math.PI*2); ctx.fillStyle = '#fff'; ctx.shadowBlur = 10; cxp3.shadowColor = '#ef4444'; ctx.fill(); ctx.shadowBlur = 0;
             }
         }
-
-        function handleResize() {
-            [ce1, cs1, ce2, cs2, cs3, cp3].forEach(c => { if(c && c.parentElement) { c.width = c.parentElement.clientWidth; c.height = c.parentElement.clientHeight; }});
-        }
-        window.addEventListener('resize', handleResize);
 
         let lt = 0;
         function animate(ts) {
@@ -680,213 +495,138 @@
             const dt = (ts - lt) / 1000; lt = ts;
 
             if (activeTab === 1) {
-                if (run1) {
-                    if (run1_E) {
-                        t1_E += dt;
-                        if (t1_E >= targetBounces1 * BOUNCE_TIME * gm1) {
-                            t1_E = targetBounces1 * BOUNCE_TIME * gm1;
-                            run1_E = false;
+                const baseC = 100;
+                const shipV = vf0 * baseC;
+                const ballV = 0.5 * baseC;
+                const lightV = 1.0 * baseC;
+                
+                let shipStartY = co0.height / 2 + 50;
+
+                // 충돌하지 않은 상태에서만 시간이 흐름 (충돌 시 완벽한 정지)
+                if (!isHit0) {
+                    let actual_dt = dt;
+                    if (objActive0) {
+                        let v_rel = (objType0 === 'ball') ? ballV : lightV;
+                        let timeToHit = SHIP_COLLISION_DIST / v_rel;
+                        
+                        // 충돌하는 순간 초과된 시간(dt)을 보정하여 딱 닿는 시점에서 멈추게 함
+                        if (tObj0 + dt >= timeToHit) {
+                            actual_dt = timeToHit - tObj0;
+                            isHit0 = true;
                         }
+                        tObj0 += actual_dt;
                     }
-                    if (run1_S) {
-                        t1_S += dt;
-                        if (t1_S >= targetBounces1 * BOUNCE_TIME) {
-                            t1_S = targetBounces1 * BOUNCE_TIME;
-                            run1_S = false;
+                    t0 += actual_dt;
+
+                    // 외부 관찰자 시점: 빛의 경로 실시간 기록
+                    if (objType0 === 'light' && objActive0) {
+                        if (lightPath0.length === 0) {
+                            lightPath0.push({x: shipX_launch - 6, y: shipStartY - 65});
                         }
-                    }
-                    if (!run1_E && !run1_S) {
-                        run1 = false;
-                        document.getElementById('btnPlay1').textContent = '시작';
+                        let current_x = shipX_launch - 6 + lightV * tObj0;
+                        lightPath0.push({x: current_x, y: shipStartY - 65});
                     }
                 }
-                const w = ce1.width, h = ce1.height;
-                const by = h * 0.25; 
-                
-                cxe1.clearRect(0,0,w,h); cxs1.clearRect(0,0,w,h);
-                
-                let dist_E = t1_E * pxv1;
-                let dist_S = t1_S * pxv1;
-                let maxAllowedDist_1 = w * 0.6; 
-                
-                let zoomScale1_E = 1.0;
-                if (dist_E > maxAllowedDist_1) zoomScale1_E = maxAllowedDist_1 / dist_E;
-                
-                let zoomScale1_S = 1.0;
-                if (dist_S > maxAllowedDist_1) zoomScale1_S = maxAllowedDist_1 / dist_S;
-                
-                cxe1.save();
-                cxe1.translate(w*0.2, by);            
-                cxe1.scale(zoomScale1_E, zoomScale1_E);
-                cxe1.translate(-w*0.2, -by);
 
-                drawGrid(cxe1, w, h, 0, 1, false, t1_E, 1/zoomScale1_E);
-                drawPlanet(cxe1, w*0.2, by, 1); 
-                drawShip(cxe1, w*0.2 + dist_E, by, gm1, vf1>0, false);
-                drawLightClock(cxe1, w*0.2, by + 60, t1_E, '#00f3ff', tr1_E_stat); 
-                drawClock(cxe1, w*0.2, by + 130, t1_E, '#00f3ff');
-                drawLightClock(cxe1, w*0.2 + dist_E, by + 60, t1_E/gm1, '#f0abfc', tr1_E);
-                drawClock(cxe1, w*0.2 + dist_E, by + 130, t1_E/gm1, '#f0abfc');
+                const wi = ci0.width, hi = ci0.height;
+                const wo = co0.width, ho = co0.height;
+                cxi0.clearRect(0,0,wi,hi);
+                cxo0.clearRect(0,0,wo,ho);
+
+                // --- 내부 관찰자 시점 ---
+                cxi0.save();
+                cxi0.fillStyle = '#0f172a'; cxi0.fillRect(0,0,wi,hi);
+                cxi0.fillStyle = '#fff';
+                // 배경 별 (t0가 멈추면 같이 멈춤)
+                for(let i=1; i<=40; i++) {
+                    let randX = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
+                    let sx = (randX * wi - shipV * t0) % wi; if (sx < 0) sx += wi;
+                    cxi0.fillRect(sx, (Math.abs(Math.sin(i * 7.23)) * hi), 1.5, 1.5);
+                }
+                let startX = 150;
+                // 우주선 그리기 (충돌 후에는 부스터 불꽃 끔)
+                drawHorizontalShipAndHuman(cxi0, startX, shipStartY, vf0 > 0 && !isHit0);
                 
-                cxe1.restore();
+                if (objActive0) {
+                    let v_rel = (objType0 === 'ball') ? ballV : lightV;
+                    let dist_in = Math.min(v_rel * tObj0, SHIP_COLLISION_DIST);
+                    let ox = startX - 6 + dist_in, oy = shipStartY - 65; 
+
+                    // 내부 관찰자: 빛 경로 그리기 (진한 빨간 실선)
+                    if (objType0 === 'light') {
+                        cxi0.beginPath(); cxi0.moveTo(startX - 6, oy); cxi0.lineTo(ox, oy);
+                        cxi0.strokeStyle = '#ef4444'; cxi0.lineWidth = 2; cxi0.stroke();
+                    }
+
+                    cxi0.beginPath(); cxi0.arc(ox, oy, 4, 0, Math.PI*2);
+                    cxi0.fillStyle = (objType0 === 'ball') ? '#fbbf24' : '#ef4444';
+                    if(objType0==='light') { cxi0.shadowBlur=10; cxi0.shadowColor='#ef4444'; }
+                    cxi0.fill(); cxi0.shadowBlur=0;
+                }
+                cxi0.restore();
+
+                // --- 외부 관찰자 시점 ---
+                cxo0.save();
+                cxo0.fillStyle = '#0f172a'; cxo0.fillRect(0,0,wo,ho);
+                cxo0.fillStyle = '#fff';
+                // 외부 시점 배경 별 (원래 고정)
+                for(let i=1; i<=40; i++) {
+                    let randX = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
+                    cxo0.fillRect(randX * wo, (Math.abs(Math.sin(i * 7.23)) * ho), 1.5, 1.5);
+                }
                 
-                cxs1.save();
-                cxs1.translate(w*0.8, by);            
-                cxs1.scale(zoomScale1_S, zoomScale1_S);
-                cxs1.translate(-w*0.8, -by);
+                let ship_pos_x = 50 + shipV * t0;
                 
-                drawGrid(cxs1, w, h, pxv1, gm1, true, t1_S, 1/zoomScale1_S);
-                drawPlanet(cxs1, w*0.8 - dist_S, by, gm1);
-                drawShip(cxs1, w*0.8, by, 1, vf1>0, false);
-                drawLightClock(cxs1, w*0.8, by + 60, t1_S, '#f0abfc', tr1_S_stat);
-                drawClock(cxs1, w*0.8, by + 130, t1_S, '#f0abfc');
-                drawLightClock(cxs1, w*0.8 - dist_S, by + 60, t1_S/gm1, '#00f3ff', tr1_S);
-                drawClock(cxs1, w*0.8 - dist_S, by + 130, t1_S/gm1, '#00f3ff');
+                // 화면 밖으로 나가면 초기화 (정지 상태에서는 나가지 않음)
+                if (ship_pos_x > wo + 150) { 
+                    t0 = 0; tObj0 = 0; objActive0 = false; isHit0 = false; ship_pos_x = 50; 
+                    lightPath0 = []; 
+                }
+
+                // 우주선을 먼저 그려서 그 위에 빛의 흔적이 덮이도록 순서 변경
+                drawHorizontalShipAndHuman(cxo0, ship_pos_x, shipStartY, vf0 > 0 && !isHit0);
+
+                // 외부 관찰자: 빛 경로 그리기 (저장된 경로 유지)
+                if (objType0 === 'light' && lightPath0.length > 1) {
+                    cxo0.beginPath(); cxo0.moveTo(lightPath0[0].x, lightPath0[0].y);
+                    for(let p of lightPath0) cxo0.lineTo(p.x, p.y);
+                    cxo0.strokeStyle = '#ef4444'; // 빨간 실선
+                    cxo0.lineWidth = 2; cxo0.stroke(); 
+                }
                 
-                cxs1.restore();
-                
-                updateData1(t1_E, t1_E/gm1, t1_S/gm1, t1_S); 
+                if (objActive0) {
+                    // 외부 시점에서의 투사체 현재 위치 (t0, tObj0가 멈추므로 충돌 위치에 그대로 고정됨)
+                    let v_abs = (objType0 === 'ball') ? (shipV + ballV) : lightV; 
+                    let ox = shipX_launch - 6 + v_abs * tObj0;
+                    let oy = shipStartY - 65;
+                    
+                    cxo0.beginPath(); cxo0.arc(ox, oy, 4, 0, Math.PI*2);
+                    cxo0.fillStyle = (objType0 === 'ball') ? '#fbbf24' : '#ef4444';
+                    if(objType0==='light') { cxo0.shadowBlur=10; cxo0.shadowColor='#ef4444'; }
+                    cxo0.fill(); cxo0.shadowBlur=0;
+                }
+                cxo0.restore();
+
             } else if (activeTab === 2) {
-                const w = ce2.width, h = ce2.height, by = h*0.45; 
-                
-                if (!done2) {
-                    let cvp = Math.abs(vf2 * c);
-                    let sd = (cvp * cvp) / (2 * acc2 * c);
-                    if (vf2 < 0 && x2 > 0 && x2 <= sd + 2) { auto2 = true; thrust2 = 1; }
-                    
-                    if (thrust2 !== 0) { vf2 += thrust2 * acc2 * dt; vf2 = Math.max(-0.99, Math.min(0.99, vf2)); }
-                    
-                    if (auto2 && vf2 >= 0) { x2 = 0; vf2 = 0; thrust2 = 0; done2 = true; auto2 = false; }
-                    else if (x2 > 0 && x2 + vf2*c*dt <= 0) { x2 = 0; vf2 = 0; thrust2 = 0; done2 = true; }
-                    else if (x2 === 0 && vf2 < 0) { vf2 = 0; thrust2 = 0; }
-                    else { x2 += vf2 * c * dt; } 
-                    
-                    if (hasStarted2) {
-                        let gm2 = 1 / Math.sqrt(1 - vf2*vf2); 
-                        t2E += dt; 
-                        if(gm2) t2S += dt / gm2;
-                    }
+                if (run1) {
+                    if (run1_E) { t1_E += dt; if (t1_E >= targetBounces1 * BOUNCE_TIME * gm1) { t1_E = targetBounces1 * BOUNCE_TIME * gm1; run1_E = false; } }
+                    if (run1_S) { t1_S += dt; if (t1_S >= targetBounces1 * BOUNCE_TIME) { t1_S = targetBounces1 * BOUNCE_TIME; run1_S = false; } }
+                    if (!run1_E && !run1_S) { run1 = false; if(document.getElementById('btnPlay1')) document.getElementById('btnPlay1').textContent = '시작'; }
                 }
-
-                if (thrust2 === 1) {
-                    targetPendulumAngle = Math.PI / 4; 
-                    currentPendulumAngle += (targetPendulumAngle - currentPendulumAngle) * 8 * dt;
-                } else if (thrust2 === -1) {
-                    targetPendulumAngle = -Math.PI / 4; 
-                    currentPendulumAngle += (targetPendulumAngle - currentPendulumAngle) * 8 * dt;
-                } else if (!hasStarted2 || done2) {
-                    targetPendulumAngle = 0; 
-                    currentPendulumAngle += (targetPendulumAngle - currentPendulumAngle) * 8 * dt;
-                } else {
-                    let floatAngle = Math.sin(ts / 600) * 0.4 + Math.cos(ts / 400) * 0.2;
-                    currentPendulumAngle += (floatAngle - currentPendulumAngle) * 3 * dt;
-                }
-
-                let zoomScale = 1.0;
-                let currentDist = Math.abs(x2);
-                let maxAllowedDist = w * 0.6; 
-                if (currentDist > maxAllowedDist) zoomScale = maxAllowedDist / currentDist;
-
-                let gm2d = 1/Math.sqrt(1-vf2*vf2);
-                cxe2.clearRect(0,0,w,h); cxs2.clearRect(0,0,w,h);
-
-                let flip = vf2 < 0; 
-                let mE = (thrust2 === 1 && !flip) || (thrust2 === -1 && flip);
-                let rE = (thrust2 === -1 && !flip) || (thrust2 === 1 && flip);
-
-                cxe2.save();
-                cxe2.translate(w*0.2, by);            
-                cxe2.scale(zoomScale, zoomScale);     
-                cxe2.translate(-w*0.2, -by);          
-
-                drawGrid(cxe2, w, h, 0, 1, false, t2E, 1/zoomScale); 
-                drawPlanet(cxe2, w*0.2, by, 1, 0); 
-                drawShip(cxe2, w*0.2 + x2, by, gm2d, mE, rE, flip, currentPendulumAngle); 
-                cxe2.restore();
-
-                cxs2.save();
-                cxs2.translate(w*0.8, by);            
-                cxs2.scale(zoomScale, zoomScale);     
-                cxs2.translate(-w*0.8, -by);          
-
-                drawGrid(cxs2, w, h, Math.abs(vf2*c), gm2d, vf2>0, t2E, 1/zoomScale); 
-                drawPlanet(cxs2, w*0.8 - x2, by, gm2d, 0); 
-                drawShip(cxs2, w*0.8, by, 1, mE, rE, flip, currentPendulumAngle); 
-                cxs2.restore();
-
-                updateUI2(t2E, t2S, t2E, t2S);
-
+                const w = ce1.width, h = ce1.height, by = h * 0.25; cxe1.clearRect(0,0,w,h); cxs1.clearRect(0,0,w,h);
+                let dist_E = t1_E * pxv1, dist_S = t1_S * pxv1, maxAllowedDist_1 = w * 0.6, zoomScale1_E = (dist_E > maxAllowedDist_1) ? maxAllowedDist_1 / dist_E : 1.0, zoomScale1_S = (dist_S > maxAllowedDist_1) ? maxAllowedDist_1 / dist_S : 1.0;
+                cxe1.save(); cxe1.translate(w*0.2, by); cxe1.scale(zoomScale1_E, zoomScale1_E); cxe1.translate(-w*0.2, -by); drawGrid(cxe1, w, h, 0, 1, false, t1_E, 1/zoomScale1_E); drawPlanet(cxe1, w*0.2, by, 1); drawShip(cxe1, w*0.2 + dist_E, by, gm1, vf1>0, false); drawLightClock(cxe1, w*0.2, by + 60, t1_E, '#00f3ff', tr1_E_stat); drawClock(cxe1, w*0.2, by + 130, t1_E, '#00f3ff'); drawLightClock(cxe1, w*0.2 + dist_E, by + 60, t1_E/gm1, '#f0abfc', tr1_E); drawClock(cxe1, w*0.2 + dist_E, by + 130, t1_E/gm1, '#f0abfc'); cxe1.restore();
+                cxs1.save(); cxs1.translate(w*0.8, by); cxs1.scale(zoomScale1_S, zoomScale1_S); cxs1.translate(-w*0.8, -by); drawGrid(cxs1, w, h, pxv1, gm1, true, t1_S, 1/zoomScale1_S); drawPlanet(cxs1, w*0.8 - dist_S, by, gm1); drawShip(cxs1, w*0.8, by, 1, vf1>0, false); drawLightClock(cxs1, w*0.8, by + 60, t1_S, '#f0abfc', tr1_S_stat); drawClock(cxs1, w*0.8, by + 130, t1_S, '#f0abfc'); drawLightClock(cxs1, w*0.8 - dist_S, by + 60, t1_S/gm1, '#00f3ff', tr1_S); drawClock(cxs1, w*0.8 - dist_S, by + 130, t1_S/gm1, '#00f3ff'); cxs1.restore(); updateData1(t1_E, t1_E/gm1, t1_S/gm1, t1_S);
             } else if (activeTab === 3) {
-                const w1 = cs3.width, h1 = cs3.height; 
-                const w2 = cp3.width, h2 = cp3.height;
-                
-                // 좌/우 화면 개별 시간 업데이트 및 충돌 판정 함수
-                function updateState(state, type, dt) {
-                    if (state.stopped) return;
-                    
-                    let next_t3 = run3 ? state.t3 + dt : state.t3;
-                    let next_tLight = runLight3 ? state.tLight + dt : state.tLight;
-                    
-                    // 1, 2번 상황은 초기부터 무한 등속 운동 (버튼 무관)
-                    let next_tScene = state.tScene;
-                    if (['1', '2'].includes(type)) {
-                        next_tScene += dt;
-                    } else {
-                        if (run3 || runLight3) next_tScene += dt;
-                    }
-
-                    let a = ug3 * 15;
-                    let v_x = 60; // 50%로 줄인 빛의 속도
-                    let t_wall = 50 / v_x;
-
-                    let ballHit = false, lightHit = false;
-                    let overflow = 0;
-
-                    // 충돌 판정 (상황 종료 조건)
-                    if (['3', '4', '5'].includes(type)) {
-                        // 가속/중력 상황: 바닥 또는 벽 충돌 시 종료
-                        let t_hit_floor_ball = (a > 0) ? Math.sqrt(118 / a) : Infinity;
-                        if (run3 && next_t3 >= t_hit_floor_ball) {
-                            ballHit = true;
-                            overflow = Math.max(overflow, next_t3 - t_hit_floor_ball);
-                        }
-
-                        let t_hit_floor_light = (a > 0) ? Math.sqrt(124 / a) : Infinity;
-                        let t_hit_light = Math.min(t_wall, t_hit_floor_light);
-                        if (runLight3 && next_tLight >= t_hit_light) {
-                            lightHit = true;
-                            overflow = Math.max(overflow, next_tLight - t_hit_light);
-                        }
-                    } else if (['1', '2'].includes(type)) {
-                        // 등속 운동 상황: 빛이 벽에 닿았을 때만 종료
-                        if (runLight3 && next_tLight >= t_wall) {
-                            lightHit = true;
-                            overflow = Math.max(overflow, next_tLight - t_wall);
-                        }
-                    }
-
-                    if (ballHit || lightHit) {
-                        state.stopped = true;
-                        if (run3) state.t3 = next_t3 - overflow;
-                        if (runLight3) state.tLight = next_tLight - overflow;
-                        state.tScene = next_tScene - overflow;
-                    } else {
-                        state.t3 = next_t3;
-                        state.tLight = next_tLight;
-                        state.tScene = next_tScene;
-                    }
-                }
-
-                // 좌, 우 캔버스를 독립적으로 계산
-                updateState(stateL, selLeft.value, dt);
-                updateState(stateR, selRight.value, dt);
-                
-                cxs3.clearRect(0, 0, w1, h1);
-                cxp3.clearRect(0, 0, w2, h2);
-                
-                // 각 캔버스에 맞는 개별 상태(State) 객체를 전달하여 렌더링
-                drawScenario3(cxs3, w1, h1, selLeft.value, stateL);
-                drawScenario3(cxp3, w2, h2, selRight.value, stateR);
+                const w = ce2.width, h = ce2.height, by = h*0.45; if (!done2) { let cvp = Math.abs(vf2 * c), sd = (cvp * cvp) / (2 * acc2 * c); if (vf2 < 0 && x2 > 0 && x2 <= sd + 2) { auto2 = true; thrust2 = 1; } if (thrust2 !== 0) { vf2 += thrust2 * acc2 * dt; vf2 = Math.max(-0.99, Math.min(0.99, vf2)); } if (auto2 && vf2 >= 0) { x2 = 0; vf2 = 0; thrust2 = 0; done2 = true; auto2 = false; } else if (x2 > 0 && x2 + vf2*c*dt <= 0) { x2 = 0; vf2 = 0; thrust2 = 0; done2 = true; } else if (x2 === 0 && vf2 < 0) { vf2 = 0; thrust2 = 0; } else { x2 += vf2 * c * dt; } if (hasStarted2) { let gm2 = 1 / Math.sqrt(1 - vf2*vf2); t2E += dt; if(gm2) t2S += dt / gm2; } }
+                if (thrust2 === 1) { targetPendulumAngle = Math.PI / 4; currentPendulumAngle += (targetPendulumAngle - currentPendulumAngle) * 8 * dt; } else if (thrust2 === -1) { targetPendulumAngle = -Math.PI / 4; currentPendulumAngle += (targetPendulumAngle - currentPendulumAngle) * 8 * dt; } else if (!hasStarted2 || done2) { targetPendulumAngle = 0; currentPendulumAngle += (targetPendulumAngle - currentPendulumAngle) * 8 * dt; } else { let floatAngle = Math.sin(ts / 600) * 0.4 + Math.cos(ts / 400) * 0.2; currentPendulumAngle += (floatAngle - currentPendulumAngle) * 3 * dt; }
+                let zoomScale = (Math.abs(x2) > w * 0.6) ? (w * 0.6 / Math.abs(x2)) : 1.0; let gm2d = 1/Math.sqrt(1-vf2*vf2); cxe2.clearRect(0,0,w,h); cxs2.clearRect(0,0,w,h); let flip = vf2 < 0, mE = (thrust2 === 1 && !flip) || (thrust2 === -1 && flip), rE = (thrust2 === -1 && !flip) || (thrust2 === 1 && flip);
+                cxe2.save(); cxe2.translate(w*0.2, by); cxe2.scale(zoomScale, zoomScale); cxe2.translate(-w*0.2, -by); drawGrid(cxe2, w, h, 0, 1, false, t2E, 1/zoomScale); drawPlanet(cxe2, w*0.2, by, 1, 0); drawShip(cxe2, w*0.2 + x2, by, gm2d, mE, rE, flip, currentPendulumAngle); cxe2.restore();
+                cxs2.save(); cxs2.translate(w*0.8, by); cxs2.scale(zoomScale, zoomScale); cxs2.translate(-w*0.8, -by); drawGrid(cxs2, w, h, Math.abs(vf2*c), gm2d, vf2>0, t2E, 1/zoomScale); drawPlanet(cxs2, w*0.8 - x2, by, gm2d, 0); drawShip(cxs2, w*0.8, by, 1, mE, rE, flip, currentPendulumAngle); cxs2.restore(); updateUI2(t2E, t2S, t2E, t2S);
+            } else if (activeTab === 4) {
+                const w1 = cs3.width, h1 = cs3.height, w2 = cp3.width, h2 = cp3.height;
+                function updateState(state, type, dt) { if (state.stopped) return; let next_t3 = run3 ? state.t3 + dt : state.t3, next_tLight = runLight3 ? state.tLight + dt : state.tLight, next_tScene = (['1','2'].includes(type) || run3 || runLight3) ? state.tScene + dt : state.tScene, a = ug3 * 15, v_x = 60, t_wall = 50 / v_x, ballHit = false, lightHit = false, overflow = 0; if (['3','4','5'].includes(type)) { let t_hit_floor_ball = (a > 0) ? Math.sqrt(118 / a) : Infinity; if (run3 && next_t3 >= t_hit_floor_ball) { ballHit = true; overflow = Math.max(overflow, next_t3 - t_hit_floor_ball); } let t_hit_floor_light = (a > 0) ? Math.sqrt(124 / a) : Infinity; let t_hit_light = Math.min(t_wall, t_hit_floor_light); if (runLight3 && next_tLight >= t_hit_light) { lightHit = true; overflow = Math.max(overflow, next_tLight - t_hit_light); } } else if (['1','2'].includes(type)) { if (runLight3 && next_tLight >= t_wall) { lightHit = true; overflow = Math.max(overflow, next_tLight - t_wall); } } if (ballHit || lightHit) { state.stopped = true; if (run3) state.t3 = next_t3 - overflow; if (runLight3) state.tLight = next_tLight - overflow; state.tScene = next_tScene - overflow; } else { state.t3 = next_t3; state.tLight = next_tLight; state.tScene = next_tScene; } }
+                updateState(stateL, selLeft.value, dt); updateState(stateR, selRight.value, dt); cxs3.clearRect(0, 0, w1, h1); cxp3.clearRect(0, 0, w2, h2); drawScenario3(cxs3, w1, h1, selLeft.value, stateL); drawScenario3(cxp3, w2, h2, selRight.value, stateR);
             }
             requestAnimationFrame(animate);
         }

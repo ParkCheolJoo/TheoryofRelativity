@@ -361,7 +361,7 @@
             const phase = (t % BOUNCE_TIME) / BOUNCE_TIME; const py = phase < 0.5 ? -25 + (phase / 0.5) * 50 : 25 - ((phase - 0.5) / 0.5) * 50; const ay = y + py;
             if (trails) {
                 if (trails.length > 0 && Math.abs(x - trails[trails.length-1].x) > 1000) trails.length = 0;
-                trails.push({x, y: ay}); if (trails.length > 500) trails.shift(); ctx.beginPath(); ctx.moveTo(trails[0].x, trails[0].y);
+                if (trails.length === 0 || trails[trails.length-1].x !== x || trails[trails.length-1].y !== ay) trails.push({x, y: ay}); if (trails.length > 5000) trails.shift(); ctx.beginPath(); ctx.moveTo(trails[0].x, trails[0].y);
                 for(let p of trails) ctx.lineTo(p.x, p.y); ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'; ctx.setLineDash([2, 2]); ctx.stroke(); ctx.setLineDash([]);
             }
             ctx.beginPath(); ctx.arc(x, ay, 3, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.restore();

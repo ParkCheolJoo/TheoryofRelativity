@@ -75,9 +75,15 @@
     <!-- Tab 1: Constancy of Light Speed -->
     <section id="tab0" class="flex-1 flex flex-col min-h-0">
         <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800 gap-4">
+            
+            <div class="flex flex-row xl:flex-col space-x-2 xl:space-x-0 xl:space-y-2 shrink-0">
+                <button id="btnModeClass" class="px-3 py-1.5 bg-gray-700 text-gray-400 hover:bg-gray-600 rounded text-xs font-bold transition-colors">⚾ 고전 역학 모드</button>
+                <button id="btnModeRel" class="px-3 py-1.5 bg-cyan-600 text-white rounded text-xs font-bold transition-colors">🔦 상대성 이론 모드</button>
+            </div>
+
             <div class="flex-1 w-full max-w-xl mx-2 md:mx-4">
-                <div class="flex justify-between text-[10px] md:text-sm mb-1 text-cyan-300">
-                    <span>0c (정지)</span><span>우주선 속도 (v)</span><span>0.90c</span>
+                <div class="flex justify-between text-[10px] md:text-sm mb-1 text-cyan-300" id="lblTitleContainer0">
+                    <span id="lblMinV0">0c</span><span id="lblTitleV0">우주선 속도 (v)</span><span id="lblMaxV0">0.90c</span>
                 </div>
                 <input type="range" id="velSlider0" min="0" max="0.9" step="0.01" value="0.5">
             </div>
@@ -88,7 +94,7 @@
                 </div>
                 
                 <div class="flex space-x-2">
-                    <button id="btnThrowBall0" class="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white rounded font-bold text-xs md:text-sm transition-colors">야구공 던지기</button>
+                    <button id="btnThrowBall0" style="display:none;" class="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-500 text-white rounded font-bold text-xs md:text-sm transition-colors">야구공 던지기</button>
                     <button id="btnShootLight0" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-bold text-xs md:text-sm transition-colors">빛 쏘기</button>
                     <button id="btnReset0" class="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white rounded font-bold text-xs md:text-sm transition-colors">초기화</button>
                 </div>
@@ -385,20 +391,77 @@
         // --- TAB 0 Logic (광속 불변의 법칙) ---
         const cxi0 = ci0 ? ci0.getContext('2d') : null, cxo0 = co0 ? co0.getContext('2d') : null;
         const s0 = document.getElementById('velSlider0'), v0 = document.getElementById('valV0');
+        const btnModeClass = document.getElementById('btnModeClass'), btnModeRel = document.getElementById('btnModeRel');
+        const btnBall0 = document.getElementById('btnThrowBall0'), btnLight0 = document.getElementById('btnShootLight0');
+        const lblMinV0 = document.getElementById('lblMinV0'), lblMaxV0 = document.getElementById('lblMaxV0'), lblTitleContainer0 = document.getElementById('lblTitleContainer0');
 
+        let mode0 = 'relativity';
         let vf0 = 0.5;
         let t_in = 0, t_out = 0;
         let t_proj_in = 0, t_proj_out = 0;
-        let objType0 = null, objActive0 = false, shipX_launch = 0;
+        let objType0 = 'light'; 
+        let objActive0 = false, shipX_launch = 0;
         let isHit0_in = false, isHit0_out = false;
         let lightPath0 = []; 
 
         const SHIP_COLLISION_DIST = 93.5; 
 
+        function setMode0(newMode) {
+            mode0 = newMode;
+            objActive0 = false;
+            t_in = 0; t_out = 0; t_proj_in = 0; t_proj_out = 0; 
+            isHit0_in = false; isHit0_out = false; shipX_launch = 0;
+            lightPath0 = []; 
+
+            if (mode0 === 'classical') {
+                btnModeClass.className = 'px-3 py-1.5 bg-yellow-600 text-white rounded text-xs font-bold transition-colors';
+                btnModeRel.className = 'px-3 py-1.5 bg-gray-700 text-gray-400 hover:bg-gray-600 rounded text-xs font-bold transition-colors';
+                
+                btnBall0.style.display = 'block';
+                btnLight0.style.display = 'none';
+                lblMinV0.textContent = '0 m/s';
+                lblMaxV0.textContent = '100 m/s';
+                lblTitleContainer0.className = 'flex justify-between text-[10px] md:text-sm mb-1 text-yellow-400';
+                v0.className = 'text-sm font-bold text-yellow-400';
+                
+                s0.min = 0; s0.max = 100; s0.step = 1; s0.value = 50;
+                vf0 = 50 / 110; // 시각적 속도 매핑 (시원하게 빠르게 변경)
+                v0.textContent = '50 m/s';
+                objType0 = 'ball';
+            } else {
+                btnModeClass.className = 'px-3 py-1.5 bg-gray-700 text-gray-400 hover:bg-gray-600 rounded text-xs font-bold transition-colors';
+                btnModeRel.className = 'px-3 py-1.5 bg-cyan-600 text-white rounded text-xs font-bold transition-colors';
+                
+                btnBall0.style.display = 'none';
+                btnLight0.style.display = 'block';
+                lblMinV0.textContent = '0c';
+                lblMaxV0.textContent = '0.90c';
+                lblTitleContainer0.className = 'flex justify-between text-[10px] md:text-sm mb-1 text-cyan-300';
+                v0.className = 'text-sm font-bold text-cyan-400';
+                
+                s0.min = 0; s0.max = 0.9; s0.step = 0.01; s0.value = 0.5;
+                vf0 = 0.5;
+                v0.textContent = '0.50c';
+                objType0 = 'light';
+            }
+        }
+
+        btnModeClass?.addEventListener('click', () => setMode0('classical'));
+        btnModeRel?.addEventListener('click', () => setMode0('relativity'));
+
+        // init
+        if (btnModeRel) setMode0('relativity');
+
         if (s0) {
             s0.addEventListener('input', e => {
-                vf0 = parseFloat(e.target.value);
-                v0.textContent = vf0.toFixed(2) + 'c';
+                if (mode0 === 'classical') {
+                    const val = parseInt(e.target.value);
+                    vf0 = val / 110; // 시각적 속도 매핑 변경
+                    v0.textContent = val + ' m/s';
+                } else {
+                    vf0 = parseFloat(e.target.value);
+                    v0.textContent = vf0.toFixed(2) + 'c';
+                }
             });
         }
 

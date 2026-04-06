@@ -386,11 +386,14 @@
         const cxi0 = ci0 ? ci0.getContext('2d') : null, cxo0 = co0 ? co0.getContext('2d') : null;
         const s0 = document.getElementById('velSlider0'), v0 = document.getElementById('valV0');
 
-        let vf0 = 0.5, t0 = 0;
-        let objType0 = null, objActive0 = false, tObj0 = 0, shipX_launch = 0, isHit0 = false;
+        let vf0 = 0.5;
+        let t_in = 0, t_out = 0;
+        let t_proj_in = 0, t_proj_out = 0;
+        let objType0 = null, objActive0 = false, shipX_launch = 0;
+        let isHit0_in = false, isHit0_out = false;
         let lightPath0 = []; 
 
-        const SHIP_COLLISION_DIST = 93.5; // 볼록한 면에 정확히 닿도록 충돌 거리 수정 (기존 136 -> 93.5)
+        const SHIP_COLLISION_DIST = 93.5; 
 
         if (s0) {
             s0.addEventListener('input', e => {
@@ -400,17 +403,21 @@
         }
 
         document.getElementById('btnThrowBall0')?.addEventListener('click', () => { 
-            objType0 = 'ball'; objActive0 = true; tObj0 = 0; isHit0 = false;
-            shipX_launch = 50 + (vf0 * 100) * t0; 
+            objType0 = 'ball'; objActive0 = true; 
+            t_proj_in = 0; t_proj_out = 0; isHit0_in = false; isHit0_out = false;
+            shipX_launch = 50 + (vf0 * 100) * t_out; 
             lightPath0 = []; 
         });
         document.getElementById('btnShootLight0')?.addEventListener('click', () => { 
-            objType0 = 'light'; objActive0 = true; tObj0 = 0; isHit0 = false;
-            shipX_launch = 50 + (vf0 * 100) * t0; 
+            objType0 = 'light'; objActive0 = true; 
+            t_proj_in = 0; t_proj_out = 0; isHit0_in = false; isHit0_out = false;
+            shipX_launch = 50 + (vf0 * 100) * t_out; 
             lightPath0 = []; 
         });
         document.getElementById('btnReset0')?.addEventListener('click', () => { 
-            objActive0 = false; tObj0 = 0; t0 = 0; isHit0 = false; shipX_launch = 0;
+            objActive0 = false; 
+            t_in = 0; t_out = 0; t_proj_in = 0; t_proj_out = 0; 
+            isHit0_in = false; isHit0_out = false; shipX_launch = 0;
             lightPath0 = []; 
         });
 
@@ -499,34 +506,57 @@
                 const shipV = vf0 * baseC;
                 const ballV = 0.5 * baseC;
                 const lightV = 1.0 * baseC;
+                let gamma0 = 1 / Math.sqrt(1 - vf0 * vf0);
+                let displayGamma = (objType0 === 'light') ? gamma0 : 1.0; // 빛일 때만 길이 수축 적용
                 
                 let shipStartY = co0.height / 2 + 50;
 
-                // 충돌하지 않은 상태에서만 시간이 흐름 (충돌 시 완벽한 정지)
-                if (!isHit0) {
-                    let actual_dt = dt;
-                    if (objActive0) {
-                        let v_rel = (objType0 === 'ball') ? ballV : lightV;
-                        let timeToHit = SHIP_COLLISION_DIST / v_rel;
-                        
-                        // 충돌하는 순간 초과된 시간(dt)을 보정하여 딱 닿는 시점에서 멈추게 함
-                        if (tObj0 + dt >= timeToHit) {
-                            actual_dt = timeToHit - tObj0;
-                            isHit0 = true;
-                        }
-                        tObj0 += actual_dt;
-                    }
-                    t0 += actual_dt;
+                let dt_in = dt;
+                let dt_out = dt;
 
-                    // 외부 관찰자 시점: 빛의 경로 실시간 기록
-                    if (objType0 === 'light' && objActive0) {
-                        if (lightPath0.length === 0) {
-                            lightPath0.push({x: shipX_launch - 6, y: shipStartY - 65});
+                if (objActive0) {
+                    let v_rel = (objType0 === 'ball') ? ballV : lightV;
+                    let v_abs = (objType0 === 'ball') ? (shipV + ballV) : lightV; 
+                    
+                    let timeToHit_in = SHIP_COLLISION_DIST / v_rel;
+                    let timeToHit_out = (SHIP_COLLISION_DIST / displayGamma) / (v_abs - shipV); 
+
+                    // 내부 관찰자 타이머 (벽에 닿으면 정지)
+                    if (!isHit0_in) {
+                        if (t_proj_in + dt_in >= timeToHit_in) {
+                            dt_in = timeToHit_in - t_proj_in;
+                            isHit0_in = true;
                         }
-                        let current_x = shipX_launch - 6 + lightV * tObj0;
-                        lightPath0.push({x: current_x, y: shipStartY - 65});
+                        t_proj_in += dt_in;
+                    } else {
+                        dt_in = 0; 
+                    }
+
+                    // 외부 관찰자 타이머 (수축된 벽을 쫓아가 닿으면 정지)
+                    if (!isHit0_out) {
+                        if (t_proj_out + dt_out >= timeToHit_out) {
+                            dt_out = timeToHit_out - t_proj_out;
+                            isHit0_out = true;
+                        }
+                        t_proj_out += dt_out;
+                        
+                        if (objType0 === 'light') {
+                            let start_ox = shipX_launch - 6 / displayGamma;
+                            if (lightPath0.length === 0) {
+                                lightPath0.push({x: start_ox, y: shipStartY - 65});
+                            }
+                            let current_ox = start_ox + v_abs * t_proj_out;
+                            if (lightPath0.length === 0 || lightPath0[lightPath0.length-1].x !== current_ox) {
+                                lightPath0.push({x: current_ox, y: shipStartY - 65});
+                            }
+                        }
+                    } else {
+                        dt_out = 0;
                     }
                 }
+
+                t_in += dt_in;
+                t_out += dt_out;
 
                 const wi = ci0.width, hi = ci0.height;
                 const wo = co0.width, ho = co0.height;
@@ -537,22 +567,19 @@
                 cxi0.save();
                 cxi0.fillStyle = '#0f172a'; cxi0.fillRect(0,0,wi,hi);
                 cxi0.fillStyle = '#fff';
-                // 배경 별 (t0가 멈추면 같이 멈춤)
                 for(let i=1; i<=40; i++) {
                     let randX = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
-                    let sx = (randX * wi - shipV * t0) % wi; if (sx < 0) sx += wi;
+                    let sx = (randX * wi - shipV * t_in) % wi; if (sx < 0) sx += wi;
                     cxi0.fillRect(sx, (Math.abs(Math.sin(i * 7.23)) * hi), 1.5, 1.5);
                 }
                 let startX = 150;
-                // 우주선 그리기 (충돌 후에는 부스터 불꽃 끔)
-                drawHorizontalShipAndHuman(cxi0, startX, shipStartY, vf0 > 0 && !isHit0);
+                drawHorizontalShipAndHuman(cxi0, startX, shipStartY, vf0 > 0 && !isHit0_in);
                 
                 if (objActive0) {
                     let v_rel = (objType0 === 'ball') ? ballV : lightV;
-                    let dist_in = Math.min(v_rel * tObj0, SHIP_COLLISION_DIST);
+                    let dist_in = v_rel * t_proj_in;
                     let ox = startX - 6 + dist_in, oy = shipStartY - 65; 
 
-                    // 내부 관찰자: 빛 경로 그리기 (진한 빨간 실선)
                     if (objType0 === 'light') {
                         cxi0.beginPath(); cxi0.moveTo(startX - 6, oy); cxi0.lineTo(ox, oy);
                         cxi0.strokeStyle = '#ef4444'; cxi0.lineWidth = 2; cxi0.stroke();
@@ -569,35 +596,38 @@
                 cxo0.save();
                 cxo0.fillStyle = '#0f172a'; cxo0.fillRect(0,0,wo,ho);
                 cxo0.fillStyle = '#fff';
-                // 외부 시점 배경 별 (원래 고정)
                 for(let i=1; i<=40; i++) {
                     let randX = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
                     cxo0.fillRect(randX * wo, (Math.abs(Math.sin(i * 7.23)) * ho), 1.5, 1.5);
                 }
                 
-                let ship_pos_x = 50 + shipV * t0;
+                let ship_pos_x = 50 + shipV * t_out;
                 
-                // 화면 밖으로 나가면 초기화 (정지 상태에서는 나가지 않음)
                 if (ship_pos_x > wo + 150) { 
-                    t0 = 0; tObj0 = 0; objActive0 = false; isHit0 = false; ship_pos_x = 50; 
+                    objActive0 = false; 
+                    t_in = 0; t_out = 0; t_proj_in = 0; t_proj_out = 0;
+                    isHit0_in = false; isHit0_out = false; 
+                    ship_pos_x = 50; shipX_launch = 50; 
                     lightPath0 = []; 
                 }
 
-                // 우주선을 먼저 그려서 그 위에 빛의 흔적이 덮이도록 순서 변경
-                drawHorizontalShipAndHuman(cxo0, ship_pos_x, shipStartY, vf0 > 0 && !isHit0);
+                cxo0.save();
+                cxo0.translate(ship_pos_x, shipStartY);
+                cxo0.scale(1 / displayGamma, 1);
+                drawHorizontalShipAndHuman(cxo0, 0, 0, vf0 > 0 && !isHit0_out);
+                cxo0.restore();
 
-                // 외부 관찰자: 빛 경로 그리기 (저장된 경로 유지)
                 if (objType0 === 'light' && lightPath0.length > 1) {
                     cxo0.beginPath(); cxo0.moveTo(lightPath0[0].x, lightPath0[0].y);
                     for(let p of lightPath0) cxo0.lineTo(p.x, p.y);
-                    cxo0.strokeStyle = '#ef4444'; // 빨간 실선
+                    cxo0.strokeStyle = '#ef4444'; 
                     cxo0.lineWidth = 2; cxo0.stroke(); 
                 }
                 
                 if (objActive0) {
-                    // 외부 시점에서의 투사체 현재 위치 (t0, tObj0가 멈추므로 충돌 위치에 그대로 고정됨)
                     let v_abs = (objType0 === 'ball') ? (shipV + ballV) : lightV; 
-                    let ox = shipX_launch - 6 + v_abs * tObj0;
+                    let start_ox = shipX_launch - 6 / displayGamma;
+                    let ox = start_ox + v_abs * t_proj_out;
                     let oy = shipStartY - 65;
                     
                     cxo0.beginPath(); cxo0.arc(ox, oy, 4, 0, Math.PI*2);

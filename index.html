@@ -65,10 +65,11 @@
             </div>
             <nav class="flex w-full lg:w-auto overflow-x-auto no-scrollbar p-1">
                 <button class="tab-btn active flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="1">1. 광속 불변</button>
-                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="2">2. 특수 상대성</button>
-                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="3">3. 가속 운동</button>
-                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="4">4. 쌍둥이 역설</button>
-                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="5">5. 등가 원리</button>
+                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="2">2. 시간 지연</button>
+                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="3">3. 길이 수축</button>
+                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="4">4. 가속 운동</button>
+                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="5">5. 쌍둥이 역설</button>
+                <button class="tab-btn flex-1 py-2 px-3 text-[11px] md:text-sm font-bold text-gray-400" data-tab="6">6. 등가 원리</button>
             </nav>
         </div>
     </header>
@@ -113,7 +114,7 @@
         </main>
     </section>
 
-    <!-- Tab 2: Special Relativity -->
+    <!-- Tab 2: Special Relativity (Time Dilation) -->
     <section id="tab1" class="flex-1 flex flex-col min-h-0 hidden">
         <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800 gap-4">
             <div class="flex-1 w-full max-w-xl mx-2 md:mx-4">
@@ -181,7 +182,62 @@
         </main>
     </section>
 
-    <!-- Tab 3: Accelerated Motion (Circular) -->
+    <!-- Tab 3: Length Contraction (NEW) -->
+    <section id="tab_len" class="flex-1 flex flex-col min-h-0 hidden">
+        <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800 gap-4">
+            <div class="flex-1 w-full max-w-xl mx-2 md:mx-4">
+                <div class="flex justify-between text-[10px] md:text-sm mb-1 text-cyan-300">
+                    <span>0.01c</span><span>우주선 속도 (v)</span><span>0.99c</span>
+                </div>
+                <input type="range" id="velSliderLen" min="0.01" max="0.99" step="0.01" value="0.5">
+            </div>
+            
+            <div class="flex flex-wrap justify-center items-center gap-2 md:gap-4">
+                <div class="flex items-center space-x-2 bg-gray-800 p-2 rounded-lg border border-gray-700">
+                    <div class="text-center px-1"><div class="text-[10px] text-gray-400">속도</div><div class="text-sm font-bold text-cyan-400" id="valVLen">0.50c</div></div>
+                    <div class="w-px h-6 bg-gray-600"></div>
+                    <div class="text-center px-1"><div class="text-[10px] text-gray-400">로렌츠 인자</div><div class="text-sm font-bold text-fuchsia-400" id="valGammaLen">1.15</div></div>
+                </div>
+                
+                <div class="flex space-x-2">
+                    <button id="btnPlayLen" class="w-16 md:w-20 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-xs md:text-sm transition-colors">시작</button>
+                    <button id="btnResetLen" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded font-bold text-xs md:text-sm transition-colors">초기화</button>
+                </div>
+            </div>
+        </div>
+        <main class="flex-1 grid grid-cols-2 gap-2 md:gap-4 min-h-0">
+            <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-cyan-400">관찰자: 지구 (소행성 띠 정지)</h2></div>
+                <div class="flex-1 relative p-1"><canvas id="cvsEarthLen" class="w-full h-full"></canvas></div>
+                <div class="grid grid-cols-2 gap-px bg-gray-700">
+                    <div class="bg-gray-900 py-2 text-center">
+                        <span class="text-[9px] text-cyan-400 block mb-1">측정된 소행성 띠 길이</span>
+                        <div class="text-lg font-bold text-cyan-400" id="lenE_E">300.00m</div>
+                    </div>
+                    <div class="bg-gray-900 py-2 text-center">
+                        <span class="text-[9px] text-cyan-400 block mb-1">통과에 걸린 시간</span>
+                        <div class="text-lg font-bold text-cyan-400" id="timeE_E">0.00s</div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+                <div class="p-1 md:p-2 bg-gray-800 border-b border-gray-700 text-center"><h2 class="text-xs font-bold text-fuchsia-400">관찰자: 우주선 (우주선 정지)</h2></div>
+                <div class="flex-1 relative p-1"><canvas id="cvsShipLen" class="w-full h-full"></canvas></div>
+                <div class="grid grid-cols-2 gap-px bg-gray-700">
+                    <div class="bg-gray-900 py-2 text-center">
+                        <span class="text-[9px] text-fuchsia-400 block mb-1">측정된 소행성 띠 길이</span>
+                        <div class="text-lg font-bold text-fuchsia-400" id="lenS_S">300.00m</div>
+                    </div>
+                    <div class="bg-gray-900 py-2 text-center">
+                        <span class="text-[9px] text-fuchsia-400 block mb-1">통과에 걸린 시간</span>
+                        <div class="text-lg font-bold text-fuchsia-400" id="timeS_S">0.00s</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Tab 4: Accelerated Motion (Circular) -->
     <section id="tab_rot" class="flex-1 flex flex-col min-h-0 hidden">
         <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800 gap-4">
             <div class="flex-1 w-full max-w-xl mx-2 md:mx-4">
@@ -243,7 +299,7 @@
         </main>
     </section>
 
-    <!-- Tab 4: Twin Paradox -->
+    <!-- Tab 5: Twin Paradox -->
     <section id="tab2" class="flex-1 flex flex-col min-h-0 hidden">
         <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800">
             <div class="flex-1 w-full text-center xl:text-left mb-4 xl:mb-0"></div>
@@ -278,7 +334,7 @@
         </main>
     </section>
 
-    <!-- Tab 5: Equivalence Principle -->
+    <!-- Tab 6: Equivalence Principle -->
     <section id="tab3" class="flex-1 flex flex-col min-h-0 hidden">
         <div class="flex flex-col xl:flex-row justify-between items-center mb-4 p-4 bg-gray-900 rounded-xl border border-gray-800">
             <div class="mb-4 xl:mb-0">
@@ -337,9 +393,10 @@
         const tabSections = [
             document.getElementById('tab0'), 
             document.getElementById('tab1'), 
-            document.getElementById('tab_rot'), // 3. 가속 운동
-            document.getElementById('tab2'),    // 4. 쌍둥이 역설
-            document.getElementById('tab3')     // 5. 등가 원리
+            document.getElementById('tab_len'), // 3. 길이 수축 (NEW)
+            document.getElementById('tab_rot'), // 4. 가속 운동
+            document.getElementById('tab2'),    // 5. 쌍둥이 역설
+            document.getElementById('tab3')     // 6. 등가 원리
         ];
         
         tabBtns.forEach(btn => {
@@ -354,12 +411,13 @@
 
         const ci0 = document.getElementById('cvsInside0'), co0 = document.getElementById('cvsOutside0');
         const ce1 = document.getElementById('cvsEarth1'), cs1 = document.getElementById('cvsShip1');
+        const ceLen = document.getElementById('cvsEarthLen'), csLen = document.getElementById('cvsShipLen');
         const cvsCenRot = document.getElementById('cvsCenterRot'), cvsOutRot = document.getElementById('cvsOuterRot');
         const ce2 = document.getElementById('cvsEarth2'), cs2 = document.getElementById('cvsShip2');
         const cs3 = document.getElementById('cvsSpace3'), cp3 = document.getElementById('cvsPlanet3');
 
         function handleResize() {
-            [ci0, co0, ce1, cs1, cvsCenRot, cvsOutRot, ce2, cs2, cs3, cp3].forEach(cvs => { if(cvs && cvs.parentElement) { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; }});
+            [ci0, co0, ce1, cs1, ceLen, csLen, cvsCenRot, cvsOutRot, ce2, cs2, cs3, cp3].forEach(cvs => { if(cvs && cvs.parentElement) { cvs.width = cvs.parentElement.clientWidth; cvs.height = cvs.parentElement.clientHeight; }});
         }
         window.addEventListener('resize', handleResize);
 
@@ -424,6 +482,50 @@
             ctx.beginPath(); ctx.ellipse(w*0.2, -1.5, 4 / gamma, 2.5, 0.1, 0, Math.PI * 2); ctx.fillStyle = '#38bdf8'; ctx.fill(); ctx.stroke();
             ctx.restore(); ctx.fillStyle = '#fff'; ctx.font = '10px Orbitron'; ctx.textAlign = 'center'; ctx.fillText('SHIP', 0, -22);
             if (angle !== undefined) drawAttachedHUD(ctx, true, angle); ctx.restore();
+        }
+
+        // --- Asteroid Belt Drawing (For Tab 3) ---
+        function drawAsteroidBelt(ctx, x, y, length, gamma) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(1 / gamma, 1);
+            
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(length, 0);
+            ctx.stroke();
+
+            // Start/End lines
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(-2, -20, 4, 40);
+            ctx.fillRect(length-2, -20, 4, 40);
+            
+            ctx.fillStyle = '#64748b';
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.5;
+
+            const count = Math.floor(length / 25);
+            for(let i=0; i<=count; i++) {
+                let ax = i * 25;
+                let ay = Math.sin(i * 123.45) * 12;
+                let size = 6 + Math.abs(Math.cos(i * 321.1)) * 6;
+                
+                ctx.beginPath();
+                for(let j=0; j<6; j++) {
+                    let ang = j * Math.PI / 3 + i;
+                    let r = size * (0.8 + 0.3*Math.sin(j*i*77));
+                    let px = ax + r * Math.cos(ang);
+                    let py = ay + r * Math.sin(ang);
+                    if(j===0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+            ctx.restore();
         }
 
         function drawClock(ctx, x, y, t, clr) {
@@ -569,7 +671,58 @@
         document.getElementById('btnReset1')?.addEventListener('click', () => { resetSim1(); });
         function updateData1(tE_E, tS_E, tE_S, tS_S) { if(document.getElementById('timeE1_E')) { document.getElementById('timeE1_E').textContent = tE_E.toFixed(2)+'s'; document.getElementById('timeS1_E').textContent = tS_E.toFixed(2)+'s'; document.getElementById('timeE1_S').textContent = tE_S.toFixed(2)+'s'; document.getElementById('timeS1_S').textContent = tS_S.toFixed(2)+'s'; const dE_E = tE_E * 2.0; const dS_E = tE_E * 2.0; const dE_S = tS_S * 2.0; const dS_S = tS_S * 2.0; document.getElementById('distE1_E').textContent = dE_E.toFixed(2); document.getElementById('distS1_E').textContent = dS_E.toFixed(2); document.getElementById('distE1_S').textContent = dE_S.toFixed(2); document.getElementById('distS1_S').textContent = dS_S.toFixed(2); }}
 
-        // --- NEW TAB: ROTATION (가속 운동) Logic ---
+        // --- NEW TAB 2 (Length Contraction) Logic ---
+        const sLen = document.getElementById('velSliderLen'), vLen = document.getElementById('valVLen'), gLen = document.getElementById('valGammaLen');
+        let runLen = false, runLen_E = false, runLen_S = false;
+        let vfLen = 0.5, gmLen = 1.1547;
+        let tLen_E = 0, tLen_S = 0;
+        const BELT_L0 = 300; // 고유 길이(소행성 띠)
+
+        if (sLen) {
+            sLen.addEventListener('input', e => {
+                vfLen = parseFloat(e.target.value);
+                gmLen = 1 / Math.sqrt(1 - vfLen*vfLen);
+                vLen.textContent = vfLen.toFixed(2) + 'c';
+                gLen.textContent = gmLen.toFixed(2);
+                resetLen();
+            });
+        }
+        function resetLen() {
+            runLen = false; runLen_E = false; runLen_S = false;
+            tLen_E = 0; tLen_S = 0;
+            if(document.getElementById('btnPlayLen')) document.getElementById('btnPlayLen').textContent = '시작';
+            updateLenUI();
+        }
+        document.getElementById('btnPlayLen')?.addEventListener('click', () => {
+            if (vfLen === 0) return; // 속도가 0이면 건너뛰기
+            let pxv = vfLen * c;
+            let timeToCross_E = BELT_L0 / pxv;
+            let timeToCross_S = (BELT_L0 / gmLen) / pxv;
+            
+            if (tLen_E >= timeToCross_E && tLen_S >= timeToCross_S) {
+                tLen_E = 0; tLen_S = 0;
+            }
+            
+            runLen = !runLen;
+            if (runLen) {
+                runLen_E = tLen_E < timeToCross_E;
+                runLen_S = tLen_S < timeToCross_S;
+            }
+            document.getElementById('btnPlayLen').textContent = runLen ? '일시정지' : '시작';
+        });
+        document.getElementById('btnResetLen')?.addEventListener('click', resetLen);
+
+        function updateLenUI() {
+            if(document.getElementById('lenE_E')) {
+                document.getElementById('lenE_E').textContent = BELT_L0.toFixed(2) + ' m';
+                document.getElementById('timeE_E').textContent = tLen_E.toFixed(2) + ' s';
+                document.getElementById('lenS_S').textContent = (BELT_L0 / gmLen).toFixed(2) + ' m';
+                document.getElementById('timeS_S').textContent = tLen_S.toFixed(2) + ' s';
+            }
+        }
+        updateLenUI(); // 초기 1회 실행
+
+        // --- TAB 3 (Rotation/Acceleration) Logic ---
         let runRot = false;
         let vfRot = 0, gmRot = 1;
         let tRotExt = 0, tRotCen = 0, tRotEdge = 0;
@@ -601,11 +754,9 @@
             const cy = h / 2;
             const radius = Math.min(w, h) * 0.35;
             
-            // 별(우주 배경) 그리기
             ctx.save();
             ctx.translate(cx, cy);
             if (isCenterView) {
-                // 중앙 관찰자 시점: 원판이 고정되어 있고 배경이 반대로 돎
                 ctx.rotate(-rotAngle);
             }
             ctx.fillStyle = '#fff';
@@ -616,11 +767,9 @@
             }
             ctx.restore();
             
-            // 원판 그리기
             ctx.save();
             ctx.translate(cx, cy);
             if (!isCenterView) {
-                // 외부 정지 관찰자 시점: 배경 고정, 원판이 돎
                 ctx.rotate(rotAngle);
             }
             
@@ -638,17 +787,15 @@
                 ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(i*Math.PI/4)*radius, Math.sin(i*Math.PI/4)*radius); ctx.stroke();
             }
             
-            // 중앙 관찰자 시계 (회전 안 함, 속도 0)
             ctx.save();
-            if (!isCenterView) ctx.rotate(-rotAngle); // 시계판이 뒤집히지 않도록 역회전(관람차 원리)
+            if (!isCenterView) ctx.rotate(-rotAngle); 
             drawClock(ctx, 0, 0, tRotCen, '#f0abfc');
             ctx.fillStyle = '#f0abfc'; ctx.font = '10px Orbitron'; ctx.textAlign = 'center'; ctx.fillText('CEN', 0, -25);
             ctx.restore();
             
-            // 가장자리 관찰자 시계 (접선 속도로 이동 중)
             ctx.save();
-            ctx.translate(radius - 30, 0); // 가장자리 위치로 먼저 이동
-            if (!isCenterView) ctx.rotate(-rotAngle); // 시계판이 뒤집히지 않도록 역회전(관람차 원리)
+            ctx.translate(radius - 30, 0); 
+            if (!isCenterView) ctx.rotate(-rotAngle); 
             drawClock(ctx, 0, 0, tRotEdge, '#facc15');
             ctx.fillStyle = '#facc15'; ctx.font = '10px Orbitron'; ctx.textAlign = 'center'; ctx.fillText('EDGE', 0, -25);
             ctx.restore();
@@ -657,7 +804,7 @@
             ctx.restore();
         }
 
-        // --- TAB (Was 2) Logic ---
+        // --- TAB 4 Logic (Twin Paradox) ---
         const cxe2 = ce2.getContext('2d'), cxs2 = cs2.getContext('2d');
         const v2 = document.getElementById('valV2');
         let t2E = 0, t2S = 0, vf2 = 0, x2 = 0, thrust2 = 0, done2 = false, auto2 = false, hasStarted2 = false, currentPendulumAngle = 0, targetPendulumAngle = 0;
@@ -673,7 +820,7 @@
         document.getElementById('btnReset2')?.addEventListener('click', () => { t2E = 0; t2S = 0; vf2 = 0; x2 = 0; thrust2 = 0; done2 = false; auto2 = false; hasStarted2 = false; currentPendulumAngle = 0; targetPendulumAngle = 0; updateUI2(0, 0, 0, 0); });
         function updateUI2(tE_E, tS_E, tE_S, tS_S) { if(v2) { let displayV = Math.abs(vf2) < 0.005 ? 0 : vf2; v2.textContent = (displayV > 0 ? '+' : '') + displayV.toFixed(2) + 'c'; document.getElementById('timeE2_E').textContent = tE_E.toFixed(2)+'s'; document.getElementById('timeS2_E').textContent = tS_E.toFixed(2)+'s'; document.getElementById('timeE2_S').textContent = tE_S.toFixed(2)+'s'; document.getElementById('timeS2_S').textContent = tS_S.toFixed(2)+'s'; }}
 
-        // --- TAB (Was 3) Logic ---
+        // --- TAB 5 Logic (Equivalence) ---
         const cxs3 = cs3.getContext('2d'), cxp3 = cp3.getContext('2d');
         const gs3 = document.getElementById('gravitySlider'), gv3 = document.getElementById('gravityVal');
         const selLeft = document.getElementById('selSceneLeft'), selRight = document.getElementById('selSceneRight');
@@ -722,6 +869,7 @@
             const dt = (ts - lt) / 1000; lt = ts;
 
             if (activeTab === 1) {
+                // 1. 광속 불변
                 const scale_i = Math.min(1, ci0.width / 400);
                 const scale_o = Math.min(1, co0.width / 400);
                 const wi = ci0.width / scale_i, hi = ci0.height / scale_i;
@@ -859,6 +1007,7 @@
                 cxo0.restore();
 
             } else if (activeTab === 2) {
+                // 2. 시간 지연
                 if (run1) {
                     if (run1_E) { t1_E += dt; if (t1_E >= targetBounces1 * BOUNCE_TIME * gm1) { t1_E = targetBounces1 * BOUNCE_TIME * gm1; run1_E = false; } }
                     if (run1_S) { t1_S += dt; if (t1_S >= targetBounces1 * BOUNCE_TIME) { t1_S = targetBounces1 * BOUNCE_TIME; run1_S = false; } }
@@ -874,7 +1023,85 @@
                 cxs1.save(); cxs1.scale(scale1, scale1); cxs1.translate(w*0.8, by); cxs1.scale(zoomScale1_S, zoomScale1_S); cxs1.translate(-w*0.8, -by); drawGrid(cxs1, w, h, pxv1, gm1, true, t1_S, 1/zoomScale1_S); drawPlanet(cxs1, w*0.8 - dist_S, by, gm1); drawShip(cxs1, w*0.8, by, 1, vf1>0, false); drawLightClock(cxs1, w*0.8, by + 60, t1_S, '#f0abfc', tr1_S_stat); drawClock(cxs1, w*0.8, by + 130, t1_S, '#f0abfc'); drawLightClock(cxs1, w*0.8 - dist_S, by + 60, t1_S/gm1, '#00f3ff', tr1_S); drawClock(cxs1, w*0.8 - dist_S, by + 130, t1_S/gm1, '#00f3ff'); cxs1.restore(); updateData1(t1_E, t1_E/gm1, t1_S/gm1, t1_S);
             
             } else if (activeTab === 3) {
-                // --- NEW TAB: ROTATION (가속 운동) ---
+                // 3. 길이 수축 (NEW TAB)
+                let pxv = vfLen * c;
+                let timeToCross_E = pxv > 0 ? BELT_L0 / pxv : Infinity;
+                let timeToCross_S = pxv > 0 ? (BELT_L0 / gmLen) / pxv : Infinity;
+
+                if (runLen) {
+                    if (runLen_E) {
+                        tLen_E += dt;
+                        if (tLen_E >= timeToCross_E) { tLen_E = timeToCross_E; runLen_E = false; }
+                    }
+                    if (runLen_S) {
+                        tLen_S += dt;
+                        if (tLen_S >= timeToCross_S) { tLen_S = timeToCross_S; runLen_S = false; }
+                    }
+                    if (!runLen_E && !runLen_S) {
+                        runLen = false;
+                        if(document.getElementById('btnPlayLen')) document.getElementById('btnPlayLen').textContent = '시작';
+                    }
+                    updateLenUI();
+                }
+
+                const wE_phys = ceLen.width, hE_phys = ceLen.height;
+                const wS_phys = csLen.width, hS_phys = csLen.height;
+                
+                const scaleE = Math.min(1, wE_phys / 400); // 모바일 동적 스케일링
+                const scaleS = Math.min(1, wS_phys / 400);
+                
+                const wE = wE_phys / scaleE, hE = hE_phys / scaleE;
+                const wS = wS_phys / scaleS, hS = hS_phys / scaleS;
+
+                const ctxE = ceLen.getContext('2d');
+                const ctxS = csLen.getContext('2d');
+                
+                ctxE.clearRect(0,0,wE_phys,hE_phys);
+                ctxS.clearRect(0,0,wS_phys,hS_phys);
+
+                const startX = 60; // 렌더링 시작 여백
+                const byE = hE * 0.5;
+                const byS = hS * 0.5;
+
+                // --- 관찰자: 지구 캔버스 ---
+                ctxE.save(); ctxE.scale(scaleE, scaleE);
+                ctxE.fillStyle = '#0f172a'; ctxE.fillRect(0,0,wE,hE);
+                ctxE.fillStyle = '#fff';
+                for(let i=1; i<=40; i++) {
+                    let sx = (Math.abs(Math.sin(i * 12.9898) * 43758.5453) * wE) % wE; 
+                    ctxE.fillRect(sx, (Math.abs(Math.sin(i * 7.23)) * hE), 1.5, 1.5);
+                }
+                
+                // 정지해 있는 소행성 띠 그리기 (고유 길이)
+                drawAsteroidBelt(ctxE, startX, byE, BELT_L0, 1.0);
+                
+                // 우주선 그리기 (이동하며 길이 수축됨)
+                let noseX_E = startX + pxv * tLen_E;
+                let shipCenter_E = noseX_E - 20/gmLen; 
+                drawShip(ctxE, shipCenter_E, byE, gmLen, vfLen > 0, false);
+                ctxE.restore();
+
+                // --- 관찰자: 우주선 캔버스 ---
+                ctxS.save(); ctxS.scale(scaleS, scaleS);
+                ctxS.fillStyle = '#0f172a'; ctxS.fillRect(0,0,wS,hS);
+                ctxS.fillStyle = '#fff';
+                for(let i=1; i<=40; i++) {
+                    let randX = Math.abs(Math.sin(i * 12.9898) * 43758.5453) % 1;
+                    let sx = (randX * wS - pxv * tLen_S) % wS; if(sx < 0) sx += wS;
+                    ctxS.fillRect(sx, (Math.abs(Math.sin(i * 7.23)) * hS), 1.5, 1.5);
+                }
+
+                // 정지해 있는 우주선 그리기 (고유 길이)
+                let shipCenter_S = startX - 20;
+                drawShip(ctxS, shipCenter_S, byS, 1.0, vfLen > 0, false);
+                
+                // 뒤로 이동하는 소행성 띠 그리기 (길이 수축됨)
+                let beltX_S = startX - pxv * tLen_S;
+                drawAsteroidBelt(ctxS, beltX_S, byS, BELT_L0, gmLen);
+                ctxS.restore();
+
+            } else if (activeTab === 4) {
+                // 4. 가속 운동 (Was 3)
                 if (runRot) {
                     tRotExt += dt;
                     tRotCen += dt;
@@ -903,8 +1130,8 @@
                 
                 updateDataRot();
 
-            } else if (activeTab === 4) {
-                // --- TAB (Was 3): Twin Paradox ---
+            } else if (activeTab === 5) {
+                // 5. 쌍둥이 역설 (Was 4)
                 const w_phys = ce2.width, h_phys = ce2.height;
                 const scale2 = Math.min(1, w_phys / 400);
                 const w = w_phys / scale2, h = h_phys / scale2;
@@ -915,8 +1142,8 @@
                 cxe2.save(); cxe2.scale(scale2, scale2); cxe2.translate(w*0.2, by); cxe2.scale(zoomScale, zoomScale); cxe2.translate(-w*0.2, -by); drawGrid(cxe2, w, h, 0, 1, false, t2E, 1/zoomScale); drawPlanet(cxe2, w*0.2, by, 1, 0); drawShip(cxe2, w*0.2 + x2, by, gm2d, mE, rE, flip, currentPendulumAngle); cxe2.restore();
                 cxs2.save(); cxs2.scale(scale2, scale2); cxs2.translate(w*0.8, by); cxs2.scale(zoomScale, zoomScale); cxs2.translate(-w*0.8, -by); drawGrid(cxs2, w, h, Math.abs(vf2*c), gm2d, vf2>0, t2E, 1/zoomScale); drawPlanet(cxs2, w*0.8 - x2, by, gm2d, 0); drawShip(cxs2, w*0.8, by, 1, mE, rE, flip, currentPendulumAngle); cxs2.restore(); updateUI2(t2E, t2S, t2E, t2S);
             
-            } else if (activeTab === 5) {
-                // --- TAB (Was 4): Equivalence Principle ---
+            } else if (activeTab === 6) {
+                // 6. 등가 원리 (Was 5)
                 const w1_phys = cs3.width, h1_phys = cs3.height, w2_phys = cp3.width, h2_phys = cp3.height;
                 const scale3_1 = Math.min(1, w1_phys / 400), scale3_2 = Math.min(1, w2_phys / 400);
                 const w1 = w1_phys / scale3_1, h1 = h1_phys / scale3_1;

@@ -722,6 +722,11 @@
             const dt = (ts - lt) / 1000; lt = ts;
 
             if (activeTab === 1) {
+                const scale_i = Math.min(1, ci0.width / 400);
+                const scale_o = Math.min(1, co0.width / 400);
+                const wi = ci0.width / scale_i, hi = ci0.height / scale_i;
+                const wo = co0.width / scale_o, ho = co0.height / scale_o;
+
                 const baseC = 100;
                 const shipV = vf0 * baseC;
                 const ballV = 0.5 * baseC;
@@ -729,7 +734,7 @@
                 let gamma0 = 1 / Math.sqrt(1 - vf0 * vf0);
                 let displayGamma = (objType0 === 'light') ? gamma0 : 1.0; 
                 
-                let shipStartY = co0.height / 2 + 50;
+                let shipStartY = ho / 2 + 50;
 
                 let dt_in = dt;
                 let dt_out = dt;
@@ -776,12 +781,11 @@
                 t_in += dt_in;
                 t_out += dt_out;
 
-                const wi = ci0.width, hi = ci0.height;
-                const wo = co0.width, ho = co0.height;
-                cxi0.clearRect(0,0,wi,hi);
-                cxo0.clearRect(0,0,wo,ho);
+                cxi0.clearRect(0,0,ci0.width,ci0.height);
+                cxo0.clearRect(0,0,co0.width,co0.height);
 
                 cxi0.save();
+                cxi0.scale(scale_i, scale_i);
                 cxi0.fillStyle = '#0f172a'; cxi0.fillRect(0,0,wi,hi);
                 cxi0.fillStyle = '#fff';
                 for(let i=1; i<=40; i++) {
@@ -810,6 +814,7 @@
                 cxi0.restore();
 
                 cxo0.save();
+                cxo0.scale(scale_o, scale_o);
                 cxo0.fillStyle = '#0f172a'; cxo0.fillRect(0,0,wo,ho);
                 cxo0.fillStyle = '#fff';
                 for(let i=1; i<=40; i++) {
@@ -859,10 +864,14 @@
                     if (run1_S) { t1_S += dt; if (t1_S >= targetBounces1 * BOUNCE_TIME) { t1_S = targetBounces1 * BOUNCE_TIME; run1_S = false; } }
                     if (!run1_E && !run1_S) { run1 = false; if(document.getElementById('btnPlay1')) document.getElementById('btnPlay1').textContent = '시작'; }
                 }
-                const w = ce1.width, h = ce1.height, by = h * 0.25; cxe1.clearRect(0,0,w,h); cxs1.clearRect(0,0,w,h);
+                const w_phys = ce1.width, h_phys = ce1.height;
+                const scale1 = Math.min(1, w_phys / 400);
+                const w = w_phys / scale1, h = h_phys / scale1;
+                const by = h * 0.25; 
+                cxe1.clearRect(0,0,w_phys,h_phys); cxs1.clearRect(0,0,w_phys,h_phys);
                 let dist_E = t1_E * pxv1, dist_S = t1_S * pxv1, maxAllowedDist_1 = w * 0.6, zoomScale1_E = (dist_E > maxAllowedDist_1) ? maxAllowedDist_1 / dist_E : 1.0, zoomScale1_S = (dist_S > maxAllowedDist_1) ? maxAllowedDist_1 / dist_S : 1.0;
-                cxe1.save(); cxe1.translate(w*0.2, by); cxe1.scale(zoomScale1_E, zoomScale1_E); cxe1.translate(-w*0.2, -by); drawGrid(cxe1, w, h, 0, 1, false, t1_E, 1/zoomScale1_E); drawPlanet(cxe1, w*0.2, by, 1); drawShip(cxe1, w*0.2 + dist_E, by, gm1, vf1>0, false); drawLightClock(cxe1, w*0.2, by + 60, t1_E, '#00f3ff', tr1_E_stat); drawClock(cxe1, w*0.2, by + 130, t1_E, '#00f3ff'); drawLightClock(cxe1, w*0.2 + dist_E, by + 60, t1_E/gm1, '#f0abfc', tr1_E); drawClock(cxe1, w*0.2 + dist_E, by + 130, t1_E/gm1, '#f0abfc'); cxe1.restore();
-                cxs1.save(); cxs1.translate(w*0.8, by); cxs1.scale(zoomScale1_S, zoomScale1_S); cxs1.translate(-w*0.8, -by); drawGrid(cxs1, w, h, pxv1, gm1, true, t1_S, 1/zoomScale1_S); drawPlanet(cxs1, w*0.8 - dist_S, by, gm1); drawShip(cxs1, w*0.8, by, 1, vf1>0, false); drawLightClock(cxs1, w*0.8, by + 60, t1_S, '#f0abfc', tr1_S_stat); drawClock(cxs1, w*0.8, by + 130, t1_S, '#f0abfc'); drawLightClock(cxs1, w*0.8 - dist_S, by + 60, t1_S/gm1, '#00f3ff', tr1_S); drawClock(cxs1, w*0.8 - dist_S, by + 130, t1_S/gm1, '#00f3ff'); cxs1.restore(); updateData1(t1_E, t1_E/gm1, t1_S/gm1, t1_S);
+                cxe1.save(); cxe1.scale(scale1, scale1); cxe1.translate(w*0.2, by); cxe1.scale(zoomScale1_E, zoomScale1_E); cxe1.translate(-w*0.2, -by); drawGrid(cxe1, w, h, 0, 1, false, t1_E, 1/zoomScale1_E); drawPlanet(cxe1, w*0.2, by, 1); drawShip(cxe1, w*0.2 + dist_E, by, gm1, vf1>0, false); drawLightClock(cxe1, w*0.2, by + 60, t1_E, '#00f3ff', tr1_E_stat); drawClock(cxe1, w*0.2, by + 130, t1_E, '#00f3ff'); drawLightClock(cxe1, w*0.2 + dist_E, by + 60, t1_E/gm1, '#f0abfc', tr1_E); drawClock(cxe1, w*0.2 + dist_E, by + 130, t1_E/gm1, '#f0abfc'); cxe1.restore();
+                cxs1.save(); cxs1.scale(scale1, scale1); cxs1.translate(w*0.8, by); cxs1.scale(zoomScale1_S, zoomScale1_S); cxs1.translate(-w*0.8, -by); drawGrid(cxs1, w, h, pxv1, gm1, true, t1_S, 1/zoomScale1_S); drawPlanet(cxs1, w*0.8 - dist_S, by, gm1); drawShip(cxs1, w*0.8, by, 1, vf1>0, false); drawLightClock(cxs1, w*0.8, by + 60, t1_S, '#f0abfc', tr1_S_stat); drawClock(cxs1, w*0.8, by + 130, t1_S, '#f0abfc'); drawLightClock(cxs1, w*0.8 - dist_S, by + 60, t1_S/gm1, '#00f3ff', tr1_S); drawClock(cxs1, w*0.8 - dist_S, by + 130, t1_S/gm1, '#00f3ff'); cxs1.restore(); updateData1(t1_E, t1_E/gm1, t1_S/gm1, t1_S);
             
             } else if (activeTab === 3) {
                 // --- NEW TAB: ROTATION (가속 운동) ---
@@ -874,31 +883,49 @@
                     let visualW = vfRot * Math.PI; 
                     rotAngle += visualW * dt;
                 }
-                const wC = cvsCenRot.width, hC = cvsCenRot.height;
+                const wC_phys = cvsCenRot.width, hC_phys = cvsCenRot.height;
+                const scaleC = Math.min(1, wC_phys / 400);
+                const wC = wC_phys / scaleC, hC = hC_phys / scaleC;
                 const ctxC = cvsCenRot.getContext('2d');
-                ctxC.clearRect(0,0,wC,hC);
+                ctxC.clearRect(0,0,wC_phys,hC_phys);
+                ctxC.save(); ctxC.scale(scaleC, scaleC);
                 drawRotScenario(ctxC, wC, hC, true);
+                ctxC.restore();
 
-                const wO = cvsOutRot.width, hO = cvsOutRot.height;
+                const wO_phys = cvsOutRot.width, hO_phys = cvsOutRot.height;
+                const scaleO = Math.min(1, wO_phys / 400);
+                const wO = wO_phys / scaleO, hO = hO_phys / scaleO;
                 const ctxO = cvsOutRot.getContext('2d');
-                ctxO.clearRect(0,0,wO,hO);
+                ctxO.clearRect(0,0,wO_phys,hO_phys);
+                ctxO.save(); ctxO.scale(scaleO, scaleO);
                 drawRotScenario(ctxO, wO, hO, false);
+                ctxO.restore();
                 
                 updateDataRot();
 
             } else if (activeTab === 4) {
                 // --- TAB (Was 3): Twin Paradox ---
-                const w = ce2.width, h = ce2.height, by = h*0.45; if (!done2) { let cvp = Math.abs(vf2 * c), sd = (cvp * cvp) / (2 * acc2 * c); if (vf2 < 0 && x2 > 0 && x2 <= sd + 2) { auto2 = true; thrust2 = 1; } if (thrust2 !== 0) { vf2 += thrust2 * acc2 * dt; vf2 = Math.max(-0.99, Math.min(0.99, vf2)); } if (auto2 && vf2 >= 0) { x2 = 0; vf2 = 0; thrust2 = 0; done2 = true; auto2 = false; } else if (x2 > 0 && x2 + vf2*c*dt <= 0) { x2 = 0; vf2 = 0; thrust2 = 0; done2 = true; } else if (x2 === 0 && vf2 < 0) { vf2 = 0; thrust2 = 0; } else { x2 += vf2 * c * dt; } if (hasStarted2) { let gm2 = 1 / Math.sqrt(1 - vf2*vf2); t2E += dt; if(gm2) t2S += dt / gm2; } }
+                const w_phys = ce2.width, h_phys = ce2.height;
+                const scale2 = Math.min(1, w_phys / 400);
+                const w = w_phys / scale2, h = h_phys / scale2;
+                const by = h*0.45; 
+                if (!done2) { let cvp = Math.abs(vf2 * c), sd = (cvp * cvp) / (2 * acc2 * c); if (vf2 < 0 && x2 > 0 && x2 <= sd + 2) { auto2 = true; thrust2 = 1; } if (thrust2 !== 0) { vf2 += thrust2 * acc2 * dt; vf2 = Math.max(-0.99, Math.min(0.99, vf2)); } if (auto2 && vf2 >= 0) { x2 = 0; vf2 = 0; thrust2 = 0; done2 = true; auto2 = false; } else if (x2 > 0 && x2 + vf2*c*dt <= 0) { x2 = 0; vf2 = 0; thrust2 = 0; done2 = true; } else if (x2 === 0 && vf2 < 0) { vf2 = 0; thrust2 = 0; } else { x2 += vf2 * c * dt; } if (hasStarted2) { let gm2 = 1 / Math.sqrt(1 - vf2*vf2); t2E += dt; if(gm2) t2S += dt / gm2; } }
                 if (thrust2 === 1) { targetPendulumAngle = Math.PI / 4; currentPendulumAngle += (targetPendulumAngle - currentPendulumAngle) * 8 * dt; } else if (thrust2 === -1) { targetPendulumAngle = -Math.PI / 4; currentPendulumAngle += (targetPendulumAngle - currentPendulumAngle) * 8 * dt; } else if (!hasStarted2 || done2) { targetPendulumAngle = 0; currentPendulumAngle += (targetPendulumAngle - currentPendulumAngle) * 8 * dt; } else { let floatAngle = Math.sin(ts / 600) * 0.4 + Math.cos(ts / 400) * 0.2; currentPendulumAngle += (floatAngle - currentPendulumAngle) * 3 * dt; }
-                let zoomScale = (Math.abs(x2) > w * 0.6) ? (w * 0.6 / Math.abs(x2)) : 1.0; let gm2d = 1/Math.sqrt(1-vf2*vf2); cxe2.clearRect(0,0,w,h); cxs2.clearRect(0,0,w,h); let flip = vf2 < 0, mE = (thrust2 === 1 && !flip) || (thrust2 === -1 && flip), rE = (thrust2 === -1 && !flip) || (thrust2 === 1 && flip);
-                cxe2.save(); cxe2.translate(w*0.2, by); cxe2.scale(zoomScale, zoomScale); cxe2.translate(-w*0.2, -by); drawGrid(cxe2, w, h, 0, 1, false, t2E, 1/zoomScale); drawPlanet(cxe2, w*0.2, by, 1, 0); drawShip(cxe2, w*0.2 + x2, by, gm2d, mE, rE, flip, currentPendulumAngle); cxe2.restore();
-                cxs2.save(); cxs2.translate(w*0.8, by); cxs2.scale(zoomScale, zoomScale); cxs2.translate(-w*0.8, -by); drawGrid(cxs2, w, h, Math.abs(vf2*c), gm2d, vf2>0, t2E, 1/zoomScale); drawPlanet(cxs2, w*0.8 - x2, by, gm2d, 0); drawShip(cxs2, w*0.8, by, 1, mE, rE, flip, currentPendulumAngle); cxs2.restore(); updateUI2(t2E, t2S, t2E, t2S);
+                let zoomScale = (Math.abs(x2) > w * 0.6) ? (w * 0.6 / Math.abs(x2)) : 1.0; let gm2d = 1/Math.sqrt(1-vf2*vf2); cxe2.clearRect(0,0,w_phys,h_phys); cxs2.clearRect(0,0,w_phys,h_phys); let flip = vf2 < 0, mE = (thrust2 === 1 && !flip) || (thrust2 === -1 && flip), rE = (thrust2 === -1 && !flip) || (thrust2 === 1 && flip);
+                cxe2.save(); cxe2.scale(scale2, scale2); cxe2.translate(w*0.2, by); cxe2.scale(zoomScale, zoomScale); cxe2.translate(-w*0.2, -by); drawGrid(cxe2, w, h, 0, 1, false, t2E, 1/zoomScale); drawPlanet(cxe2, w*0.2, by, 1, 0); drawShip(cxe2, w*0.2 + x2, by, gm2d, mE, rE, flip, currentPendulumAngle); cxe2.restore();
+                cxs2.save(); cxs2.scale(scale2, scale2); cxs2.translate(w*0.8, by); cxs2.scale(zoomScale, zoomScale); cxs2.translate(-w*0.8, -by); drawGrid(cxs2, w, h, Math.abs(vf2*c), gm2d, vf2>0, t2E, 1/zoomScale); drawPlanet(cxs2, w*0.8 - x2, by, gm2d, 0); drawShip(cxs2, w*0.8, by, 1, mE, rE, flip, currentPendulumAngle); cxs2.restore(); updateUI2(t2E, t2S, t2E, t2S);
             
             } else if (activeTab === 5) {
                 // --- TAB (Was 4): Equivalence Principle ---
-                const w1 = cs3.width, h1 = cs3.height, w2 = cp3.width, h2 = cp3.height;
+                const w1_phys = cs3.width, h1_phys = cs3.height, w2_phys = cp3.width, h2_phys = cp3.height;
+                const scale3_1 = Math.min(1, w1_phys / 400), scale3_2 = Math.min(1, w2_phys / 400);
+                const w1 = w1_phys / scale3_1, h1 = h1_phys / scale3_1;
+                const w2 = w2_phys / scale3_2, h2 = h2_phys / scale3_2;
                 function updateState(state, type, dt) { if (state.stopped) return; let next_t3 = run3 ? state.t3 + dt : state.t3, next_tLight = runLight3 ? state.tLight + dt : state.tLight, next_tScene = (['1','2'].includes(type) || run3 || runLight3) ? state.tScene + dt : state.tScene, a = ug3 * 15, v_x = 60, t_wall = 50 / v_x, ballHit = false, lightHit = false, overflow = 0; if (['3','4','5'].includes(type)) { let t_hit_floor_ball = (a > 0) ? Math.sqrt(118 / a) : Infinity; if (run3 && next_t3 >= t_hit_floor_ball) { ballHit = true; overflow = Math.max(overflow, next_t3 - t_hit_floor_ball); } let t_hit_floor_light = (a > 0) ? Math.sqrt(124 / a) : Infinity; let t_hit_light = Math.min(t_wall, t_hit_floor_light); if (runLight3 && next_tLight >= t_hit_light) { lightHit = true; overflow = Math.max(overflow, next_tLight - t_hit_light); } } else if (['1','2'].includes(type)) { if (runLight3 && next_tLight >= t_wall) { lightHit = true; overflow = Math.max(overflow, next_tLight - t_wall); } } if (ballHit || lightHit) { state.stopped = true; if (run3) state.t3 = next_t3 - overflow; if (runLight3) state.tLight = next_tLight - overflow; state.tScene = next_tScene - overflow; } else { state.t3 = next_t3; state.tLight = next_tLight; state.tScene = next_tScene; } }
-                updateState(stateL, selLeft.value, dt); updateState(stateR, selRight.value, dt); cxs3.clearRect(0, 0, w1, h1); cxp3.clearRect(0, 0, w2, h2); drawScenario3(cxs3, w1, h1, selLeft.value, stateL); drawScenario3(cxp3, w2, h2, selRight.value, stateR);
+                updateState(stateL, selLeft.value, dt); updateState(stateR, selRight.value, dt); 
+                cxs3.clearRect(0, 0, w1_phys, h1_phys); cxp3.clearRect(0, 0, w2_phys, h2_phys); 
+                cxs3.save(); cxs3.scale(scale3_1, scale3_1); drawScenario3(cxs3, w1, h1, selLeft.value, stateL); cxs3.restore();
+                cxp3.save(); cxp3.scale(scale3_2, scale3_2); drawScenario3(cxp3, w2, h2, selRight.value, stateR); cxp3.restore();
             }
             requestAnimationFrame(animate);
         }

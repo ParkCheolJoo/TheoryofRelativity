@@ -141,7 +141,7 @@
                 </div>
                 
                 <div class="flex space-x-2">
-                    <button id="btnPlay1" class="w-16 md:w-20 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-xs md:text-sm transition-colors">시작</button>
+                    <button id="btnPlay1" class="min-w-[4.5rem] md:min-w-[5rem] whitespace-nowrap px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-xs md:text-sm transition-colors">시작</button>
                     <button id="btnReset1" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded font-bold text-xs md:text-sm transition-colors">초기화</button>
                 </div>
             </div>
@@ -200,7 +200,7 @@
                 </div>
                 
                 <div class="flex space-x-2">
-                    <button id="btnPlayLen" class="w-16 md:w-20 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-xs md:text-sm transition-colors">시작</button>
+                    <button id="btnPlayLen" class="min-w-[4.5rem] md:min-w-[5rem] whitespace-nowrap px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-xs md:text-sm transition-colors">시작</button>
                     <button id="btnResetLen" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded font-bold text-xs md:text-sm transition-colors">초기화</button>
                 </div>
             </div>
@@ -254,7 +254,7 @@
                     <div class="text-center px-1"><div class="text-[10px] text-gray-400">로렌츠 인자</div><div class="text-sm font-bold text-fuchsia-400" id="valGammaRot">1.00</div></div>
                 </div>
                 <div class="flex space-x-2">
-                    <button id="btnPlayRot" class="w-16 md:w-20 px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-xs md:text-sm transition-colors">시작</button>
+                    <button id="btnPlayRot" class="min-w-[4.5rem] md:min-w-[5rem] whitespace-nowrap px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded font-bold text-xs md:text-sm transition-colors">시작</button>
                     <button id="btnResetRot" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded font-bold text-xs md:text-sm transition-colors">초기화</button>
                 </div>
             </div>
@@ -1091,13 +1091,14 @@
                     ctxS.fillRect(sx, (Math.abs(Math.sin(i * 7.23)) * hS), 1.5, 1.5);
                 }
 
-                // 정지해 있는 우주선 그리기 (고유 길이)
+                // 뒤로 이동하는 소행성 띠 그리기 (배경으로 먼저 그림, 길이 수축됨)
+                let beltX_S = startX - pxv * tLen_S;
+                drawAsteroidBelt(ctxS, beltX_S, byS, BELT_L0, gmLen);
+
+                // 정지해 있는 우주선 그리기 (앞쪽에 오도록 나중에 그림, 고유 길이)
                 let shipCenter_S = startX - 20;
                 drawShip(ctxS, shipCenter_S, byS, 1.0, vfLen > 0, false);
                 
-                // 뒤로 이동하는 소행성 띠 그리기 (길이 수축됨)
-                let beltX_S = startX - pxv * tLen_S;
-                drawAsteroidBelt(ctxS, beltX_S, byS, BELT_L0, gmLen);
                 ctxS.restore();
 
             } else if (activeTab === 4) {

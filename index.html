@@ -941,7 +941,7 @@
                     let sx = (randX * wi - shipV * t_in) % wi; if (sx < 0) sx += wi;
                     cxi0.fillRect(sx, (Math.abs(Math.sin(i * 7.23)) * hi), 1.5, 1.5);
                 }
-                let startX = 150;
+                let startX = wi / 2;
                 drawHorizontalShipAndHuman(cxi0, startX, shipStartY, vf0 > 0 && !isHit0_in);
                 
                 if (objActive0) {

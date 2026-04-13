@@ -83,16 +83,26 @@
                 <button id="btnModeRel" class="px-3 py-1.5 bg-cyan-600 text-white rounded text-xs font-bold transition-colors">🔦 상대성 이론 모드</button>
             </div>
 
-            <div class="flex-1 w-full max-w-xl mx-2 md:mx-4">
-                <div class="flex justify-between text-xs md:text-sm mb-1 text-cyan-300" id="lblTitleContainer0">
-                    <span id="lblMinV0">0c</span><span id="lblTitleV0">우주선 속도 (v)</span><span id="lblMaxV0">0.90c</span>
+            <div class="flex flex-col md:flex-row flex-1 w-full max-w-2xl mx-2 md:mx-4 gap-4">
+                <div class="flex-1 w-full">
+                    <div class="flex justify-between text-xs md:text-sm mb-1 text-cyan-300" id="lblTitleContainer0">
+                        <span id="lblMinV0">0c</span><span id="lblTitleV0">우주선 속도 (v)</span><span id="lblMaxV0">0.99c</span>
+                    </div>
+                    <input type="range" id="velSlider0" min="0" max="0.99" step="0.01" value="0.5">
                 </div>
-                <input type="range" id="velSlider0" min="0" max="0.9" step="0.01" value="0.5">
+                <div id="ballSpeedContainer0" class="flex-1 w-full" style="display:none;">
+                    <div class="flex justify-between text-xs md:text-sm mb-1 text-yellow-400">
+                        <span>0.1c</span><span>야구공 속도</span><span>0.99c</span>
+                    </div>
+                    <input type="range" id="ballSlider0" min="0.1" max="0.99" step="0.01" value="0.5">
+                </div>
             </div>
             
             <div class="flex flex-wrap justify-center items-center gap-2 md:gap-4">
                 <div class="flex items-center space-x-2 bg-gray-800 p-2 rounded-lg border border-gray-700">
                     <div class="text-center px-2"><div class="text-xs text-gray-400">우주선 속도</div><div class="text-sm font-bold text-cyan-400" id="valV0">0.50c</div></div>
+                    <div id="ballSpeedDisplayDivider" class="w-px h-6 bg-gray-600" style="display:none;"></div>
+                    <div id="ballSpeedDisplay0" class="text-center px-2" style="display:none;"><div class="text-xs text-gray-400">야구공 속도</div><div class="text-sm font-bold text-yellow-400" id="valBall0">0.50c</div></div>
                 </div>
                 
                 <div class="flex space-x-2">
@@ -569,12 +579,13 @@
 
         let mode0 = 'classical';
         let vf0 = 0.5;
+        let vb0 = 0.5;
         let t_in = 0, t_out = 0;
         let t_proj_in = 0, t_proj_out = 0;
         let objType0 = 'light'; 
-        let objActive0 = false, shipX_launch = 0;
+        let objActive0 = false;
         let isHit0_in = false, isHit0_out = false;
-        let lightPath0 = []; 
+        let isStopped0 = false, needsMarker0 = false, markerActive0 = false, markerX0 = 0;
 
         const SHIP_COLLISION_DIST = 93.5; 
 
@@ -582,8 +593,8 @@
             mode0 = newMode;
             objActive0 = false;
             t_in = 0; t_out = 0; t_proj_in = 0; t_proj_out = 0; 
-            isHit0_in = false; isHit0_out = false; shipX_launch = 0;
-            lightPath0 = []; 
+            isHit0_in = false; isHit0_out = false; 
+            isStopped0 = false; needsMarker0 = false; markerActive0 = false;
 
             if (mode0 === 'classical') {
                 btnModeClass.className = 'px-3 py-1.5 bg-yellow-600 text-white rounded text-xs font-bold transition-colors';
@@ -591,14 +602,31 @@
                 
                 btnBall0.style.display = 'block';
                 btnLight0.style.display = 'none';
-                lblMinV0.textContent = '0 m/s';
-                lblMaxV0.textContent = '100 m/s';
+                
+                const bsc = document.getElementById('ballSpeedContainer0');
+                if (bsc) bsc.style.display = 'block';
+                
+                const divDivider = document.getElementById('ballSpeedDisplayDivider');
+                if (divDivider) divDivider.style.display = 'block';
+                
+                const bsd = document.getElementById('ballSpeedDisplay0');
+                if (bsd) bsd.style.display = 'block';
+                
+                lblMinV0.textContent = '0c';
+                lblMaxV0.textContent = '0.99c';
                 lblTitleContainer0.className = 'flex justify-between text-xs md:text-sm mb-1 text-yellow-400';
                 v0.className = 'text-sm font-bold text-yellow-400';
                 
-                s0.min = 0; s0.max = 100; s0.step = 1; s0.value = 50;
-                vf0 = 50 / 110; 
-                v0.textContent = '50 m/s';
+                s0.min = 0; s0.max = 0.99; s0.step = 0.01; s0.value = 0.5;
+                vf0 = 0.5; 
+                
+                const ballSlider = document.getElementById('ballSlider0');
+                if(ballSlider) { ballSlider.value = 0.5; vb0 = 0.5; }
+                
+                v0.textContent = '0.50c';
+                const valBall0 = document.getElementById('valBall0');
+                if (valBall0) valBall0.textContent = '0.50c';
+                
                 objType0 = 'ball';
             } else {
                 btnModeClass.className = 'px-3 py-1.5 bg-gray-700 text-gray-400 hover:bg-gray-600 rounded text-xs font-bold transition-colors';
@@ -606,12 +634,22 @@
                 
                 btnBall0.style.display = 'none';
                 btnLight0.style.display = 'block';
+
+                const bsc = document.getElementById('ballSpeedContainer0');
+                if (bsc) bsc.style.display = 'none';
+                
+                const divDivider = document.getElementById('ballSpeedDisplayDivider');
+                if (divDivider) divDivider.style.display = 'none';
+                
+                const bsd = document.getElementById('ballSpeedDisplay0');
+                if (bsd) bsd.style.display = 'none';
+                
                 lblMinV0.textContent = '0c';
-                lblMaxV0.textContent = '0.90c';
+                lblMaxV0.textContent = '0.99c';
                 lblTitleContainer0.className = 'flex justify-between text-xs md:text-sm mb-1 text-cyan-300';
                 v0.className = 'text-sm font-bold text-cyan-400';
                 
-                s0.min = 0; s0.max = 0.9; s0.step = 0.01; s0.value = 0.5;
+                s0.min = 0; s0.max = 0.99; s0.step = 0.01; s0.value = 0.5;
                 vf0 = 0.5;
                 v0.textContent = '0.50c';
                 objType0 = 'light';
@@ -625,34 +663,32 @@
 
         if (s0) {
             s0.addEventListener('input', e => {
-                if (mode0 === 'classical') {
-                    const val = parseInt(e.target.value);
-                    vf0 = val / 110; 
-                    v0.textContent = val + ' m/s';
-                } else {
-                    vf0 = parseFloat(e.target.value);
-                    v0.textContent = vf0.toFixed(2) + 'c';
-                }
+                vf0 = parseFloat(e.target.value);
+                v0.textContent = vf0.toFixed(2) + 'c';
             });
         }
+        
+        document.getElementById('ballSlider0')?.addEventListener('input', e => {
+            vb0 = parseFloat(e.target.value);
+            const valBall0 = document.getElementById('valBall0');
+            if (valBall0) valBall0.textContent = vb0.toFixed(2) + 'c';
+        });
 
         document.getElementById('btnThrowBall0')?.addEventListener('click', () => { 
             objType0 = 'ball'; objActive0 = true; 
             t_proj_in = 0; t_proj_out = 0; isHit0_in = false; isHit0_out = false;
-            shipX_launch = 50 + (vf0 * 100) * t_out; 
-            lightPath0 = []; 
+            isStopped0 = false; needsMarker0 = true; markerActive0 = false;
         });
         document.getElementById('btnShootLight0')?.addEventListener('click', () => { 
             objType0 = 'light'; objActive0 = true; 
             t_proj_in = 0; t_proj_out = 0; isHit0_in = false; isHit0_out = false;
-            shipX_launch = 50 + (vf0 * 100) * t_out; 
-            lightPath0 = []; 
+            isStopped0 = false; needsMarker0 = true; markerActive0 = false;
         });
         document.getElementById('btnReset0')?.addEventListener('click', () => { 
             objActive0 = false; 
             t_in = 0; t_out = 0; t_proj_in = 0; t_proj_out = 0; 
-            isHit0_in = false; isHit0_out = false; shipX_launch = 0;
-            lightPath0 = []; 
+            isHit0_in = false; isHit0_out = false; 
+            isStopped0 = false; needsMarker0 = false; markerActive0 = false;
         });
 
         // --- TAB 1 Logic ---
@@ -877,15 +913,22 @@
 
                 const baseC = 100;
                 const shipV = vf0 * baseC;
-                const ballV = 0.5 * baseC;
+                const ballV = vb0 * baseC; 
                 const lightV = 1.0 * baseC;
                 let gamma0 = 1 / Math.sqrt(1 - vf0 * vf0);
                 let displayGamma = (objType0 === 'light') ? gamma0 : 1.0; 
                 
                 let shipStartY = ho / 2 + 50;
 
-                let dt_in = dt;
-                let dt_out = dt;
+                let dt_in = isStopped0 ? 0 : dt;
+                let dt_out = isStopped0 ? 0 : dt;
+
+                if (objActive0 && needsMarker0) {
+                    let current_ship_pos_x = 50 + shipV * t_out;
+                    markerX0 = current_ship_pos_x - 6 / displayGamma;
+                    needsMarker0 = false;
+                    markerActive0 = true;
+                }
 
                 if (objActive0) {
                     let v_rel = (objType0 === 'ball') ? ballV : lightV;
@@ -908,19 +951,11 @@
                         if (t_proj_out + dt_out >= timeToHit_out) {
                             dt_out = timeToHit_out - t_proj_out;
                             isHit0_out = true;
+                            if (mode0 === 'classical') {
+                                isStopped0 = true; // 벽에 도달한 찰나 모든 것을 즉시 정지
+                            }
                         }
                         t_proj_out += dt_out;
-                        
-                        if (objType0 === 'light') {
-                            let start_ox = shipX_launch - 6 / displayGamma;
-                            if (lightPath0.length === 0) {
-                                lightPath0.push({x: start_ox, y: shipStartY - 65});
-                            }
-                            let current_ox = start_ox + v_abs * t_proj_out;
-                            if (lightPath0.length === 0 || lightPath0[lightPath0.length-1].x !== current_ox) {
-                                lightPath0.push({x: current_ox, y: shipStartY - 65});
-                            }
-                        }
                     } else {
                         dt_out = 0;
                     }
@@ -942,7 +977,7 @@
                     cxi0.fillRect(sx, (Math.abs(Math.sin(i * 7.23)) * hi), 1.5, 1.5);
                 }
                 let startX = wi / 2;
-                drawHorizontalShipAndHuman(cxi0, startX, shipStartY, vf0 > 0 && !isHit0_in);
+                drawHorizontalShipAndHuman(cxi0, startX, shipStartY, vf0 > 0 && !isHit0_in && !isStopped0);
                 
                 if (objActive0) {
                     let v_rel = (objType0 === 'ball') ? ballV : lightV;
@@ -976,28 +1011,47 @@
                     objActive0 = false; 
                     t_in = 0; t_out = 0; t_proj_in = 0; t_proj_out = 0;
                     isHit0_in = false; isHit0_out = false; 
-                    ship_pos_x = 50; shipX_launch = 50; 
-                    lightPath0 = []; 
+                    isStopped0 = false; needsMarker0 = false; markerActive0 = false;
+                    ship_pos_x = 50; 
+                }
+
+                if (markerActive0 && mode0 === 'relativity') {
+                    cxo0.save();
+                    cxo0.beginPath();
+                    cxo0.moveTo(markerX0, shipStartY - 65); // 수정: 발사 원점에서 시작
+                    cxo0.lineTo(markerX0, shipStartY - 140); // 수정: 우주선 지붕보다 위쪽으로만 뻗어나감
+                    cxo0.strokeStyle = 'rgba(0, 243, 255, 0.4)';
+                    cxo0.setLineDash([4, 4]);
+                    cxo0.lineWidth = 1;
+                    cxo0.stroke();
+                    
+                    cxo0.fillStyle = '#00f3ff';
+                    cxo0.font = 'bold 12px Orbitron'; // 수정: 폰트 크기 확대 및 굵게
+                    cxo0.textAlign = 'center';
+                    cxo0.fillText('발사 원점', markerX0, shipStartY - 148); // 수정: 텍스트 위치를 점선 위로 크게 상향
+                    
+                    cxo0.beginPath();
+                    cxo0.arc(markerX0, shipStartY - 65, 4, 0, Math.PI*2);
+                    cxo0.fill();
+                    cxo0.restore();
                 }
 
                 cxo0.save();
                 cxo0.translate(ship_pos_x, shipStartY);
                 cxo0.scale(1 / displayGamma, 1);
-                drawHorizontalShipAndHuman(cxo0, 0, 0, vf0 > 0 && !isHit0_out);
+                drawHorizontalShipAndHuman(cxo0, 0, 0, vf0 > 0 && !isHit0_out && !isStopped0);
                 cxo0.restore();
-
-                if (objType0 === 'light' && lightPath0.length > 1) {
-                    cxo0.beginPath(); cxo0.moveTo(lightPath0[0].x, lightPath0[0].y);
-                    for(let p of lightPath0) cxo0.lineTo(p.x, p.y);
-                    cxo0.strokeStyle = '#ef4444'; 
-                    cxo0.lineWidth = 2; cxo0.stroke(); 
-                }
                 
                 if (objActive0) {
                     let v_abs = (objType0 === 'ball') ? (shipV + ballV) : lightV; 
-                    let start_ox = shipX_launch - 6 / displayGamma;
+                    let start_ox = markerActive0 ? markerX0 : (ship_pos_x - 6 / displayGamma); 
                     let ox = start_ox + v_abs * t_proj_out;
                     let oy = shipStartY - 65;
+                    
+                    if (objType0 === 'light' && markerActive0) {
+                        cxo0.beginPath(); cxo0.moveTo(markerX0, oy); cxo0.lineTo(ox, oy);
+                        cxo0.strokeStyle = '#ef4444'; cxo0.lineWidth = 2; cxo0.stroke(); 
+                    }
                     
                     cxo0.beginPath(); cxo0.arc(ox, oy, 4, 0, Math.PI*2);
                     cxo0.fillStyle = (objType0 === 'ball') ? '#fbbf24' : '#ef4444';
